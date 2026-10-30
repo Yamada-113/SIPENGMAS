@@ -12,6 +12,18 @@
     @include('shared.alert_script')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    < <div class="container text-center py-5">
+        <h1 class="display-1 fw-bold text-secondary">403</h1>
+        <h2 class="fw-semibold mt-3">Akses Ditolak</h2>
+        <p class="text-muted mt-2">
+            Anda tidak memiliki akses ke proposal ini. Proposal hanya dapat
+            dilihat oleh ketua dan anggota pengusul.
+        </p>
+        <a href="{{ url()->previous() }}" class="btn btn-primary mt-3">
+            Kembali
+        </a>
+    </div> 
+
     <div class="container pb-5">
         {{-- Header & Tombol Kembali --}}
         <div class="d-flex justify-content-between align-items-center mb-4">

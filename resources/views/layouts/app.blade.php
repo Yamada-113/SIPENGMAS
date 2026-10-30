@@ -318,6 +318,33 @@
         }
     </script>
 
+    @if (session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const container = document.getElementById('floating-alert-container');
+                if (!container) return;
+
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger shadow-lg alert-dismissible fade show border-0';
+                alertDiv.innerHTML = `
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-shield-exclamation mt-1"></i>
+                        <div>
+                            <strong>Akses Ditolak</strong><br>
+                            <small>{{ session('error') }}</small>
+                        </div>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                container.appendChild(alertDiv);
+
+                setTimeout(() => {
+                    alertDiv.classList.remove('show');
+                    setTimeout(() => alertDiv.remove(), 300);
+                }, 5000);
+            });
+        </script>
+    @endif
     @stack('scripts')
 </body>
 

@@ -306,3 +306,7 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+Route::get('/akses_ditolak', function () {
+    return redirect()->route('dosen.dashboard')
+        ->with('error', 'Anda tidak memiliki akses ke proposal ini.');
+});
