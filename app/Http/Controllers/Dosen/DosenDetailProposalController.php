@@ -32,7 +32,7 @@ class DosenDetailProposalController extends Controller
             ->contains('nidn', $user->nidn);
 
         if (!$isKetua && !$isAnggota) {
-            abort(403);
+            return response()->view('dosen.dosen_akses_ditolak', [], 403);
         }
         // if (!$detailProposal) {
         //     return redirect()->back()->with('error', 'Proposal tidak ditemukan.');
@@ -82,7 +82,7 @@ class DosenDetailProposalController extends Controller
             ->contains('nidn', $user->nidn);
 
         if (!$isKetua && !$isAnggota) {
-            abort(403);
+            return response()->view('dosen.dosen_akses_ditolak', [], 403);
         }
         $ketua = (object) [
             'nama' => $detailProposal->user->name ?? '-',
