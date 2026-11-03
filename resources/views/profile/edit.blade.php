@@ -5,11 +5,7 @@
 @section('content')
     <div class="container">
         @php
-<<<<<<< HEAD
             $role = auth()->user()->role ?? '';
-=======
-            $role = auth()->user()->role;
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90
             $backRoute = match (true) {
                 str_contains($role, 'Admin') => 'admin.dashboard',
                 str_contains($role, 'Dosen') => 'dosen.dashboard',
@@ -55,21 +51,13 @@
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-muted">Username</label>
                                 <input type="text" name="username" class="form-control bg-light"
-<<<<<<< HEAD
                                     value="{{ old('username', $user->username ?? '') }}" readonly style="cursor: not-allowed;">
-=======
-                                    value="{{ old('username', $user->username) }}" readonly style="cursor: not-allowed;">
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-muted">Nama Lengkap</label>
                                 <input type="text" class="form-control bg-light" name="name"
-<<<<<<< HEAD
                                     value="{{ $user->name ?? '' }}" readonly style="pointer-events: none; cursor: not-allowed;">
-=======
-                                    value="{{ $user->name }}" readonly style="pointer-events: none; cursor: not-allowed;">
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90
                             </div>
 
                             <div class="mb-3">
@@ -103,15 +91,9 @@
 
                                 $canUploadSignature = false;
 
-<<<<<<< HEAD
                                 if (\Illuminate\Support\Str::contains($role, 'Dosen')) {
                                     $canUploadSignature = true;
                                 } elseif (in_array($role, $allowedKeywords)) {
-=======
-                                if (\Illuminate\Support\Str::contains($user->role, 'Dosen')) {
-                                    $canUploadSignature = true;
-                                } elseif (in_array($user->role, $allowedKeywords)) {
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90
                                     $canUploadSignature = true;
                                 }
                             @endphp
@@ -120,26 +102,14 @@
                                 <div class="mb-3 mt-4">
                                     <label class="form-label fw-bold small text-muted">Tanda Tangan Digital</label>
                                     <div class="card bg-light border-0 p-3">
-<<<<<<< HEAD
                                     @if (!empty($user->tanda_tangan))
                                         <div class="mb-3 text-center bg-white border rounded p-2" style="border-style: dashed !important;">
                                             <p class="small text-muted mb-1">Tanda Tangan Saat Ini:</p>
                                             
-=======
-                                    @if ($user->tanda_tangan)
-                                        <div class="mb-3 text-center bg-white border rounded p-2" style="border-style: dashed !important;">
-                                            <p class="small text-muted mb-1">Tanda Tangan Saat Ini:</p>
-                                            
-                                            {{-- Ambil nama filenya saja (basename) --}}
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90
                                             @php
                                                 $filename = basename($user->tanda_tangan);
                                             @endphp
 
-<<<<<<< HEAD
-=======
-                                            {{-- Panggil via Route khusus tadi --}}
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90
                                             <img src="{{ route('storage.view', ['filename' => $filename]) }}" 
                                                 alt="Tanda Tangan"
                                                 class="img-fluid" 
@@ -152,10 +122,6 @@
                                             name="tanda_tangan" accept="image/png, image/jpeg, image/jpg">
                                         <div class="form-text small text-muted">
                                             <i class="bi bi-info-circle me-1"></i>Format: PNG/JPG. Max: 2MB.<br>
-<<<<<<< HEAD
-=======
-                                            <!-- <i class="bi bi-magic me-1"></i>Background putih otomatis dihapus (transparan). -->
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90
                                         </div>
 
                                         @error('tanda_tangan')
@@ -173,11 +139,7 @@
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-muted">NIDN</label>
                                 <input type="text" name="nidn" class="form-control bg-light"
-<<<<<<< HEAD
                                     value="{{ old('nidn', $user->nidn ?? '') }}" readonly style="cursor: not-allowed;">
-=======
-                                    value="{{ old('nidn', $user->nidn) }}" readonly style="cursor: not-allowed;">
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90
                             </div>
 
                             <div class="mb-3">
@@ -188,11 +150,7 @@
 
                                     @foreach ($fakultas as $f)
                                         <option value="{{ $f->nama }}"
-<<<<<<< HEAD
                                             {{ old('fakultas', $user->fakultas ?? '') == $f->nama ? 'selected' : '' }}>
-=======
-                                            {{ old('fakultas', $user->fakultas) == $f->nama ? 'selected' : '' }}>
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90
                                             {{ $f->nama }}
                                         </option>
                                     @endforeach
@@ -217,20 +175,12 @@
                                 <label class="form-label fw-bold small text-muted">Jabatan Fungsional</label>
                                 <select class="form-select @error('jabatan_fungsional') is-invalid @enderror"
                                     id="jabatan_fungsional" name="jabatan_fungsional" required>
-<<<<<<< HEAD
                                     <option value="" disabled {{ empty($user->jabatan_fungsional) ? 'selected' : '' }}>
-=======
-                                    <option value="" disabled {{ !$user->jabatan_fungsional ? 'selected' : '' }}>
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90
                                         Pilih Jabatan</option>
 
                                     @foreach ($jabatans as $j)
                                         <option value="{{ $j->nama }}"
-<<<<<<< HEAD
                                             {{ old('jabatan_fungsional', $user->jabatan_fungsional ?? '') == $j->nama ? 'selected' : '' }}>
-=======
-                                            {{ old('jabatan_fungsional', $user->jabatan_fungsional) == $j->nama ? 'selected' : '' }}>
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90
                                             {{ $j->nama }}
                                         </option>
                                     @endforeach
@@ -239,7 +189,6 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-<<<<<<< HEAD
 
                             <!-- Kolom Google Scholar ID yang sudah ada di desain awal, kini tombol link-nya difungsikan -->
                             <div class="mb-3">
@@ -262,8 +211,6 @@
                                 @enderror
                             </div>
 
-=======
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90
                         </div>
                     </div>
 
@@ -303,7 +250,6 @@
         </div>
     </div>
 
-<<<<<<< HEAD
     {{-- Menggunakan atribut data-* untuk passing data JSON agar lolos dari pengecekan syntax HTML/VS Code --}}
     <div id="prodi-json-data" data-prodi="{{ json_encode($fakultasData ?? []) }}" style="display: none;"></div>
 
@@ -359,36 +305,3 @@
         });
     </script>
 @endsection
-=======
-    <script>
-        const prodiDataEdit = @json($fakultasData);
-
-        function updateProdiEdit() {
-            const fakultasSelect = document.getElementById("fakultas_edit");
-            const prodiSelect = document.getElementById("prodi_edit");
-            const selectedFakultas = fakultasSelect.value;
-            const currentProdi = "{{ old('prodi', $user->prodi) }}";
-
-            prodiSelect.innerHTML = '<option value="" disabled selected>Pilih Program Studi</option>';
-
-            if (selectedFakultas && prodiDataEdit[selectedFakultas]) {
-                prodiDataEdit[selectedFakultas].forEach(prodi => {
-                    let option = document.createElement("option");
-                    option.value = prodi;
-                    option.textContent = prodi;
-
-                    if (prodi === currentProdi) {
-                        option.selected = true;
-                    }
-
-                    prodiSelect.appendChild(option);
-                });
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            updateProdiEdit();
-        });
-    </script>
-@endsection
->>>>>>> 6cf630f67c1dea242efeff95d3f4126523d54f90

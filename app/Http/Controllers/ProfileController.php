@@ -26,6 +26,7 @@ class ProfileController extends Controller
             'fakultas' => $fakultasDB,
             'jabatans' => $jabatans,
             'fakultasData' => $fakultasData,
+            'google_scholar_id' => $request->google_scholar_id,
         ]);
     }
 
@@ -35,6 +36,7 @@ class ProfileController extends Controller
             'fakultas'           => ['required', 'string', 'max:100'],
             'prodi'              => ['required', 'string', 'max:100'],
             'jabatan_fungsional' => ['required', 'string', 'max:100'],
+            'google_scholar_id' =>  ['required', 'string', 'max:100'],
             'tanda_tangan'       => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'], // Max 2MB
         ]);
 

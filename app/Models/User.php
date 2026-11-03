@@ -26,6 +26,7 @@ class User extends Authenticatable implements LdapAuthenticatable
         'fakultas',
         'prodi',
         'jabatan_fungsional',
+        'google_scholar_id',
         'role',
         'tanda_tangan', // <--- TAMBAHKAN INI
         'guid',
