@@ -17,14 +17,20 @@
             };
         @endphp
 
+        <!-- Tombol Kembali & Home Sesuai Wireframe -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h4 class="fw-bold mb-1 text-primary">Profil Saya</h4>
                 <p class="text-muted mb-0">Kelola informasi akun dan identitas akademik Anda.</p>
             </div>
-            <a href="{{ route($backRoute) }}" class="btn btn-secondary d-flex align-items-center">
-                <i class="bi bi-arrow-left me-2"></i> Kembali ke Dashboard
-            </a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('dosen.dashboard') }}" class="btn btn-outline-secondary d-flex align-items-center">
+                    <i class="bi bi-house-door me-2"></i> Home
+                </a>
+                <a href="{{ route($backRoute) }}" class="btn btn-secondary d-flex align-items-center">
+                    <i class="bi bi-arrow-left me-2"></i> Kembali
+                </a>
+            </div>
         </div>
 
         @if (session('status') === 'profile-updated')
@@ -90,7 +96,6 @@
                                 ];
 
                                 $canUploadSignature = false;
-
                                 if (\Illuminate\Support\Str::contains($role, 'Dosen')) {
                                     $canUploadSignature = true;
                                 } elseif (in_array($role, $allowedKeywords)) {
@@ -102,26 +107,24 @@
                                 <div class="mb-3 mt-4">
                                     <label class="form-label fw-bold small text-muted">Tanda Tangan Digital</label>
                                     <div class="card bg-light border-0 p-3">
-                                    @if (!empty($user->tanda_tangan))
-                                        <div class="mb-3 text-center bg-white border rounded p-2" style="border-style: dashed !important;">
-                                            <p class="small text-muted mb-1">Tanda Tangan Saat Ini:</p>
-                                            
-                                            @php
-                                                $filename = basename($user->tanda_tangan);
-                                            @endphp
-
-                                            <img src="{{ route('storage.view', ['filename' => $filename]) }}" 
-                                                alt="Tanda Tangan"
-                                                class="img-fluid" 
-                                                style="max-height: 100px; object-fit: contain;">
-                                        </div>
-                                    @endif
+                                        @if (!empty($user->tanda_tangan))
+                                            <div class="mb-3 text-center bg-white border rounded p-2" style="border-style: dashed !important;">
+                                                <p class="small text-muted mb-1">Tanda Tangan Saat Ini:</p>
+                                                @php
+                                                    $filename = basename($user->tanda_tangan);
+                                                @endphp
+                                                <img src="{{ route('storage.view', ['filename' => $filename]) }}" 
+                                                    alt="Tanda Tangan"
+                                                    class="img-fluid" 
+                                                    style="max-height: 100px; object-fit: contain;">
+                                            </div>
+                                        @endif
 
                                         <input type="file"
                                             class="form-control @error('tanda_tangan') is-invalid @enderror"
                                             name="tanda_tangan" accept="image/png, image/jpeg, image/jpg">
                                         <div class="form-text small text-muted">
-                                            <i class="bi bi-info-circle me-1"></i>Format: PNG/JPG. Max: 2MB.<br>
+                                            <i class="bi bi-info-circle me-1"></i>Format: PNG/JPG. Max: 2MB.
                                         </div>
 
                                         @error('tanda_tangan')
@@ -190,7 +193,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Kolom Google Scholar ID yang sudah ada di desain awal, kini tombol link-nya difungsikan -->
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-muted">Google Scholar ID</label>
                                 <div class="input-group">
@@ -230,6 +232,7 @@
         </div>
     </div>
 
+    <!-- Modal Konfirmasi Simpan -->
     <div class="modal fade" id="modalKonfirmasiSimpan" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
@@ -243,19 +246,17 @@
                 </div>
                 <div class="modal-footer justify-content-center bg-light border-0">
                     <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" form="form-update-profile" class="btn btn-primary fw-bold px-4">Ya,
-                        Simpan</button>
+                    <button type="submit" form="form-update-profile" class="btn btn-primary fw-bold px-4">Ya, Simpan</button>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Menggunakan atribut data-* untuk passing data JSON agar lolos dari pengecekan syntax HTML/VS Code --}}
+    <!-- Data JSON untuk Prodi -->
     <div id="prodi-json-data" data-prodi="{{ json_encode($fakultasData ?? []) }}" style="display: none;"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Ambil data prodi dari atribut data-* agar editor bersih dari garis merah
             const jsonElement = document.getElementById('prodi-json-data');
             const prodiDataEdit = jsonElement ? JSON.parse(jsonElement.getAttribute('data-prodi')) : {};
 
@@ -286,7 +287,7 @@
 
             updateProdiEdit();
 
-            // Fungsi interaktif tombol Google Scholar agar bisa diklik membuka tab baru
+            // Tombol Google Scholar
             const btnScholar = document.getElementById('btn-open-scholar');
             const inputScholar = document.getElementById('google_scholar_id');
 
