@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <meta name="user-id" content="{{ Auth::id() }}">
 
     <title>@yield('title', 'SIPENGMAS')</title>
@@ -77,21 +76,16 @@
     @php
         $dashboardRoute = route('dosen.dashboard');
         if (auth()->check()) {
-            if (auth()->user()->role === 'Admin') {
+            $userRole = auth()->user()->role;
+            if ($userRole === 'Admin') {
                 $dashboardRoute = route('admin.dashboard');
-            } elseif (auth()->user()->role === 'Wakil Dekan 3') {
+            } elseif ($userRole === 'Wakil Dekan 3') {
                 $dashboardRoute = route('wakil_dekan3.dashboard');
-            } elseif (auth()->user()->role === 'Dekan') {
+            } elseif ($userRole === 'Dekan') {
                 $dashboardRoute = route('dekan.dashboard');
-            } elseif (
-                auth()->user()->role === 'Kepala Pusat 1' ||
-                auth()->user()->role === 'Kepala Pusat 2' ||
-                auth()->user()->role === 'Kepala Pusat 3' ||
-                auth()->user()->role === 'Kepala Pusat 4' ||
-                auth()->user()->role === 'Kepala Pusat 5'
-            ) {
+            } elseif (str_contains($userRole, 'Kepala Pusat')) {
                 $dashboardRoute = route('kepala_pusat.dashboard');
-            } elseif (auth()->user()->role === 'Wakil Rektor 3') {
+            } elseif ($userRole === 'Wakil Rektor 3') {
                 $dashboardRoute = route('wakil_rektor.dashboard');
             }
         }
@@ -99,112 +93,103 @@
 </head>
 
 <body>
-    <div id="floating-alert-container"
-        style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 400px;"></div>
+    <div id="floating-alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 400px;"></div>
 
     <nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color: #8BC3B4;">
         <div class="container">
-            <a class="navbar-brand" href="{{ $dashboardRoute ?? '#' }}">
-                <img src="{{ asset('images/white_sipengmaswordCROP-removebg-preview.png') }}" alt="SIPENGMAS"
-                    style="height: 50px; width: auto;">
+            <a class="navbar-brand" href="{{ $dashboardRoute }}">
+                <img src="{{ asset('images/white_sipengmaswordCROP-removebg-preview.png') }}" alt="SIPENGMAS" style="height: 50px; width: auto;">
             </a>
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center d-flex flex-row">
-
                 <li class="nav-item dropdown me-3">
-                    <a class="nav-link position-relative" href="#" id="navbarDropdownNotif" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link position-relative" href="#" id="navbarDropdownNotif" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-bell-fill fs-5"></i>
 
-                        <span id="notif-badge"
-                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ auth()->user()->unreadNotifications->count() == 0 ? 'd-none' : '' }}"
-                            style="font-size: 0.6rem;">
-                            {{ auth()->user()->unreadNotifications->count() }}
+                        @php
+                            $unreadCount = auth()->check() ? auth()->user()->unreadNotifications->count() : 0;
+                            $badgeShowClass = $unreadCount == 0 ? 'd-none' : '';
+                        @endphp
+                        <span id="notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ $badgeShowClass }}" style="font-size: 0.6rem;">
+                            {{ $unreadCount }}
                         </span>
                     </a>
 
-                    <ul id="notification-list" class="dropdown-menu dropdown-menu-end shadow border-0"
-                        aria-labelledby="navbarDropdownNotif"
-                        style="width: 320px; max-height: 400px; overflow-y: auto;">
-                        <li
-                            class="dropdown-header fw-bold d-flex justify-content-between align-items-center bg-white sticky-top pt-2 pb-2 border-bottom">
+                    <ul id="notification-list" class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="navbarDropdownNotif" style="width: 320px; max-height: 400px; overflow-y: auto;">
+                        <li class="dropdown-header fw-bold d-flex justify-content-between align-items-center bg-white sticky-top pt-2 pb-2 border-bottom">
                             <span>Notifikasi</span>
-                            @if (auth()->user()->unreadNotifications->count() > 0)
-                                <a href="{{ route('mark_all_read') }}" class="text-decoration-none small text-primary"
-                                    style="font-size: 0.75rem;">Tandai semua</a>
+                            @if ($unreadCount > 0)
+                                <a href="{{ route('mark_all_read') }}" class="text-decoration-none small text-primary" style="font-size: 0.75rem;">Tandai semua</a>
                             @endif
                         </li>
 
-                        @forelse(auth()->user()->notifications->take(15) as $notification)
-                            @php
-                                $isUnread = is_null($notification->read_at);
-                                $bgColor = $isUnread ? '#eef7fd' : '#ffffff';
-                            @endphp
+                        @if (auth()->check())
+                            @forelse(auth()->user()->notifications->take(15) as $notification)
+                                @php
+                                    $isUnread = is_null($notification->read_at);
+                                    $bgHex = $isUnread ? '#eef7fd' : '#ffffff';
+                                    $notifUrl = route('notification.read', $notification->id);
+                                    $notifTitle = $notification->data['title'] ?? 'Info';
+                                    $notifMessage = \Illuminate\Support\Str::limit($notification->data['message'] ?? ($notification->data['pesan'] ?? '-'), 80);
+                                    $notifTime = $notification->created_at->diffForHumans();
+                                    $iconClass = $isUnread ? 'bi-envelope-fill' : 'bi-envelope-open';
+                                    $badgeClass = $isUnread ? 'bg-primary text-primary' : 'bg-secondary text-secondary';
+                                    $textClass = $isUnread ? 'text-dark' : 'text-muted';
+                                @endphp
 
-                            <li class="notif-item border-bottom" style="background-color: {{ $bgColor }};">
-                                <a href="{{ route('notification.read', $notification->id) }}"
-                                    class="dropdown-item d-flex align-items-start gap-2 py-3"
-                                    onclick="decrementBadge(this)">
-
-                                    <div
-                                        class="{{ $isUnread ? 'bg-primary text-primary' : 'bg-secondary text-secondary' }} bg-opacity-10 p-2 rounded-circle flex-shrink-0">
-                                        <i class="bi {{ $isUnread ? 'bi-envelope-fill' : 'bi-envelope-open' }}"></i>
-                                    </div>
-
-                                    <div style="width: 100%; white-space: normal;">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <small
-                                                class="fw-bold d-block {{ $isUnread ? 'text-dark' : 'text-muted' }}">
-                                                {{ $notification->data['title'] ?? 'Info' }}
-                                            </small>
-
-                                            @if ($isUnread)
-                                                <span class="badge bg-danger rounded-circle p-1"
-                                                    style="width: 8px; height: 8px;"> </span>
-                                            @endif
+                                <li class="notif-item border-bottom" style="background-color: {{ $bgHex }};">
+                                    <a href="{{ $notifUrl }}" class="dropdown-item d-flex align-items-start gap-2 py-3" onclick="decrementBadge(this)">
+                                        <div class="bg-opacity-15 p-2 rounded-circle flex-shrink-0 {{ $badgeClass }}">
+                                            <i class="bi {{ $iconClass }}"></i>
                                         </div>
 
-                                        <small class="{{ $isUnread ? 'text-dark' : 'text-muted' }}"
-                                            style="font-size: 0.8rem; display: block; margin-top: 2px; line-height: 1.2;">
-                                            {{ \Illuminate\Support\Str::limit($notification->data['message'] ?? ($notification->data['pesan'] ?? '-'), 80) }}
-                                        </small>
+                                        <div style="width: 100%; white-space: normal;">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <small class="fw-bold d-block {{ $textClass }}">
+                                                    {{ $notifTitle }}
+                                                </small>
 
-                                        <small class="text-secondary d-block mt-2" style="font-size: 0.65rem;">
-                                            {{ $notification->created_at->diffForHumans() }}
-                                        </small>
-                                    </div>
-                                </a>
-                            </li>
-                        @empty
-                            <li id="no-notif-msg" class="p-4 text-center text-muted">
-                                <i class="bi bi-bell-slash display-6 d-block mb-2 opacity-50"></i>
-                                <small>Belum ada notifikasi</small>
-                            </li>
-                        @endforelse
+                                                @if ($isUnread)
+                                                    <span class="badge bg-danger rounded-circle p-1" style="width: 8px; height: 8px;"> </span>
+                                                @endif
+                                            </div>
+
+                                            <small class="text-muted" style="font-size: 0.8rem; display: block; margin-top: 2px; line-height: 1.2;">
+                                                {{ $notifMessage }}
+                                            </small>
+
+                                            <small class="text-secondary d-block mt-2" style="font-size: 0.65rem;">
+                                                {{ $notifTime }}
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
+                            @empty
+                                <li id="no-notif-msg" class="p-4 text-center text-muted">
+                                    <i class="bi bi-bell-slash display-6 d-block mb-2 opacity-50"></i>
+                                    <small>Belum ada notifikasi</small>
+                                </li>
+                            @endforelse
+                        @endif
                     </ul>
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown"
-                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                            class="bi bi-person-fill me-2" viewBox="0 0 16 16">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill me-2" viewBox="0 0 16 16">
                             <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
                         </svg>
                         <span class="user-name">
-                            {{ Auth::user()->name }}
+                            {{ Auth::user()->name ?? 'User' }}
                         </span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
+                        <li><hr class="dropdown-divider"></li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <a class="dropdown-item" href="{{ route('logout') }}"
-                                    onclick="event.preventDefault(); this.closest('form').submit();">
+                                <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">
                                     Keluar
                                 </a>
                             </form>
@@ -216,6 +201,42 @@
     </nav>
 
     <main class="py-4">
+        @php
+            $currentRole = auth()->check() ? auth()->user()->role : '';
+            $navBackRoute = 'login';
+            if (str_contains($currentRole, 'Admin')) {
+                $navBackRoute = 'admin.dashboard';
+            } elseif (str_contains($currentRole, 'Dosen')) {
+                $navBackRoute = 'dosen.dashboard';
+            } elseif (str_contains($currentRole, 'Wakil Dekan')) {
+                $navBackRoute = 'wakil_dekan3.dashboard';
+            } elseif (str_contains($currentRole, 'Dekan')) {
+                $navBackRoute = 'dekan.dashboard';
+            } elseif (str_contains($currentRole, 'Kepala Pusat')) {
+                $navBackRoute = 'kepala_pusat.dashboard';
+            } elseif (str_contains($currentRole, 'Wakil Rektor')) {
+                $navBackRoute = 'wakil_rektor.dashboard';
+            }
+            $isNotDashboard = !request()->routeIs('*.dashboard');
+            $previousUrl = url()->previous();
+            $homeUrl = route($navBackRoute);
+        @endphp
+
+        @if ($isNotDashboard)
+            <div class="container mb-3">
+                <div class="d-flex justify-content-end align-items-center">
+                    <div class="d-flex gap-2">
+                        <a href="{{ $homeUrl }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+                            <i class="bi bi-house-door me-1"></i> Home
+                        </a>
+                        <a href="{{ $previousUrl }}" class="btn btn-secondary btn-sm d-flex align-items-center">
+                            <i class="bi bi-arrow-left me-1"></i> Kembali
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         @yield('content')
     </main>
 
@@ -273,17 +294,6 @@
                         if (notifList) {
                             const header = notifList.querySelector('.dropdown-header');
                             if (header) header.insertAdjacentHTML('afterend', newHtml);
-                        }
-
-                        if (notification.title.toLowerCase().includes('undangan') || notification.url.includes(
-                                'anggotarequest')) {
-                            const dashboardBadge = document.getElementById('dashboard-req-badge');
-                            if (dashboardBadge) {
-                                dashboardBadge.classList.remove('d-none');
-                                let reqCount = parseInt(dashboardBadge.innerText);
-                                if (isNaN(reqCount)) reqCount = 0;
-                                dashboardBadge.innerText = reqCount + 1;
-                            }
                         }
 
                         showRealtimeToast(notification.title, notification.message);
