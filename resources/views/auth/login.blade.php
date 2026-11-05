@@ -3,15 +3,18 @@
     <script>
         @if ($errors->has('username'))
             document.addEventListener('DOMContentLoaded', function() {
+                const message = "{{ $errors->first('username') }}";
+                const isLocked = message.toLowerCase().includes('terkunci');
+
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal login!',
-                    text: "{{ $errors->first('username') }}",
-                    confirmButtonText: 'Coba Lagi',
-                    confirmButtonColor: '#dc3545',
+                    icon: isLocked ? 'warning' : 'error',
+                    title: isLocked ? 'Akun Terkunci' : 'Gagal login!',
+                    text: message,
+                    confirmButtonText: isLocked ? 'Mengerti' : 'Coba Lagi',
+                    confirmButtonColor: isLocked ? '#f50b0b' : '#49c7b6',
                     background: '#fff',
-                    timer: 5000,
-                    timerProgressBar: true
+                    timer: isLocked ? undefined : 5000,
+                    timerProgressBar: !isLocked
                 });
             });
         @endif
