@@ -101,6 +101,39 @@
                 <img src="{{ asset('images/white_sipengmaswordCROP-removebg-preview.png') }}" alt="SIPENGMAS" style="height: 50px; width: auto;">
             </a>
 
+            <!-- Tombol Navigasi Global di Kanan Navbar -->
+            @php
+                $currentRole = auth()->check() ? auth()->user()->role : '';
+                $navBackRoute = 'login';
+                if (str_contains($currentRole, 'Admin')) {
+                    $navBackRoute = 'admin.dashboard';
+                } elseif (str_contains($currentRole, 'Dosen')) {
+                    $navBackRoute = 'dosen.dashboard';
+                } elseif (str_contains($currentRole, 'Wakil Dekan')) {
+                    $navBackRoute = 'wakil_dekan3.dashboard';
+                } elseif (str_contains($currentRole, 'Dekan')) {
+                    $navBackRoute = 'dekan.dashboard';
+                } elseif (str_contains($currentRole, 'Kepala Pusat')) {
+                    $navBackRoute = 'kepala_pusat.dashboard';
+                } elseif (str_contains($currentRole, 'Wakil Rektor')) {
+                    $navBackRoute = 'wakil_rektor.dashboard';
+                }
+                $isNotDashboard = !request()->routeIs('*.dashboard');
+                $previousUrl = url()->previous();
+                $homeUrl = route($navBackRoute);
+            @endphp
+
+            @if ($isNotDashboard)
+                <div class="d-none d-lg-flex gap-2 ms-3">
+                    <a href="{{ $homeUrl }}" class="btn btn-light btn-sm d-flex align-items-center text-dark fw-bold">
+                        <i class="bi bi-house-door me-1"></i> Home
+                    </a>
+                    <a href="{{ $previousUrl }}" class="btn btn-light btn-sm d-flex align-items-center text-dark fw-bold">
+                        <i class="bi bi-arrow-left me-1"></i> Kembali
+                    </a>
+                </div>
+            @endif
+
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center d-flex flex-row">
                 <li class="nav-item dropdown me-3">
                     <a class="nav-link position-relative" href="#" id="navbarDropdownNotif" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -201,42 +234,6 @@
     </nav>
 
     <main class="py-4">
-        @php
-            $currentRole = auth()->check() ? auth()->user()->role : '';
-            $navBackRoute = 'login';
-            if (str_contains($currentRole, 'Admin')) {
-                $navBackRoute = 'admin.dashboard';
-            } elseif (str_contains($currentRole, 'Dosen')) {
-                $navBackRoute = 'dosen.dashboard';
-            } elseif (str_contains($currentRole, 'Wakil Dekan')) {
-                $navBackRoute = 'wakil_dekan3.dashboard';
-            } elseif (str_contains($currentRole, 'Dekan')) {
-                $navBackRoute = 'dekan.dashboard';
-            } elseif (str_contains($currentRole, 'Kepala Pusat')) {
-                $navBackRoute = 'kepala_pusat.dashboard';
-            } elseif (str_contains($currentRole, 'Wakil Rektor')) {
-                $navBackRoute = 'wakil_rektor.dashboard';
-            }
-            $isNotDashboard = !request()->routeIs('*.dashboard');
-            $previousUrl = url()->previous();
-            $homeUrl = route($navBackRoute);
-        @endphp
-
-        @if ($isNotDashboard)
-            <div class="container mb-3">
-                <div class="d-flex justify-content-end align-items-center">
-                    <div class="d-flex gap-2">
-                        <a href="{{ $homeUrl }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
-                            <i class="bi bi-house-door me-1"></i> Home
-                        </a>
-                        <a href="{{ $previousUrl }}" class="btn btn-secondary btn-sm d-flex align-items-center">
-                            <i class="bi bi-arrow-left me-1"></i> Kembali
-                        </a>
-                    </div>
-                </div>
-            </div>
-        @endif
-
         @yield('content')
     </main>
 
