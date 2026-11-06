@@ -230,7 +230,7 @@
                             <i class="bi bi-house-door me-1"></i> Home
                         </a>
                         <a href="{{ $previousUrl }}" class="btn btn-secondary btn-sm d-flex align-items-center">
-                            <i class="bi bi-arrow-left me-1"></i> Kembali
+                            <i class="bi  me-1"></i> Kembali
                         </a>
                     </div>
                 </div>

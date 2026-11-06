@@ -6,31 +6,12 @@
     <div class="container">
         @php
             $role = auth()->user()->role ?? '';
-            $backRoute = match (true) {
-                str_contains($role, 'Admin') => 'admin.dashboard',
-                str_contains($role, 'Dosen') => 'dosen.dashboard',
-                str_contains($role, 'Wakil Dekan') => 'wakil_dekan3.dashboard',
-                str_contains($role, 'Dekan') => 'dekan.dashboard',
-                str_contains($role, 'Kepala Pusat') => 'kepala_pusat.dashboard',
-                str_contains($role, 'Wakil Rektor') => 'wakil_rektor.dashboard',
-                default => 'login',
-            };
         @endphp
 
-        <!-- Tombol Kembali & Home Sesuai Wireframe -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h4 class="fw-bold mb-1 text-primary">Profil Saya</h4>
-                <p class="text-muted mb-0">Kelola informasi akun dan identitas akademik Anda.</p>
-            </div>
-            <div class="d-flex gap-2">
-                <a href="{{ route('dosen.dashboard') }}" class="btn btn-outline-secondary d-flex align-items-center">
-                    <i class="bi bi-house-door me-2"></i> Home
-                </a>
-                <a href="{{ route($backRoute) }}" class="btn btn-secondary d-flex align-items-center">
-                    <i class="bi bi-arrow-left me-2"></i> Kembali
-                </a>
-            </div>
+        <!-- Judul Halaman (Tombol Kembali manual sudah dihapus agar tidak dobel) -->
+        <div class="mb-4">
+            <h4 class="fw-bold mb-1 text-primary">Profil Saya</h4>
+            <p class="text-muted mb-0">Kelola informasi akun dan identitas akademik Anda.</p>
         </div>
 
         @if (session('status') === 'profile-updated')

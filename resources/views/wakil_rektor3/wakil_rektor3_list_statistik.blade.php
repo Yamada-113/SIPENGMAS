@@ -9,7 +9,7 @@
             <div>
                 {{-- Route Kembali ke Dashboard Warek 3 --}}
                 <a href="{{ route('wakil_rektor.dashboard') }}" class="btn btn-secondary btn-action-control shadow-sm">
-                    <i class="bi bi-arrow-left me-1"></i> Kembali
+                    <i class="bi  me-1"></i> Kembali
                 </a>
             </div>
             <div class="d-flex gap-2">

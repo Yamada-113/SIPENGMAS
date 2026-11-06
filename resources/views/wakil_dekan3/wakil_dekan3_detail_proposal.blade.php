@@ -18,7 +18,7 @@
             </div>
             {{-- Tombol Kembali mengarah ke halaman list validasi --}}
             <a href="{{ route('wakil_dekan3.validasi') }}" class="btn btn-secondary d-flex align-items-center shadow-sm">
-                <i class="bi bi-arrow-left me-2"></i> Kembali ke Daftar
+                <i class="bi  me-2"></i> Kembali ke Daftar
             </a>
         </div>
 

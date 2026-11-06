@@ -15,7 +15,7 @@
                 <p class="text-muted mb-0">Tinjau kelayakan proposal sebelum memberikan keputusan pendanaan.</p>
             </div>
             <a href="{{ route('wakil_rektor.validasi') }}" class="btn btn-secondary d-flex align-items-center shadow-sm">
-                <i class="bi bi-arrow-left me-2"></i> Kembali ke Daftar
+                <i class="bi  me-2"></i> Kembali ke Daftar
             </a>
         </div>
 

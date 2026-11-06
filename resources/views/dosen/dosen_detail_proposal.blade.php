@@ -22,7 +22,7 @@
                 <p class="text-muted mb-0">Tinjau kembali data proposal.</p>
             </div>
             <a href="{{ route('dosen.dashboard') }}" class="btn btn-secondary d-flex align-items-center shadow-sm">
-                <i class="bi bi-arrow-left me-2"></i> Kembali ke Dashboard
+                <i class="bi  me-2"></i> Kembali ke Dashboard
             </a>
         </div>
 

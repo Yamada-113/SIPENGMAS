@@ -25,7 +25,7 @@
                 </form>
                 <a href="{{ route('admin.dashboard') }}"
                     class="btn btn-secondary shadow-sm d-flex align-items-center fw-bold px-3">
-                    <i class="bi bi-arrow-left me-2"></i> Kembali
+                    <i class="bi  me-2"></i> Kembali
                 </a>
             </div>
         </div>
