@@ -125,7 +125,7 @@
                             <i class="bi bi-x-circle-fill" style="font-size: 3rem;"></i>
                         </div>
                         <h5 class="fw-bold">Tolak Proposal?</h5>
-                        <p class="text-muted small">Proposal akan dikembalikan ke dosen untuk direvisi.</p>
+                        <p class="text-muted small">Proposal akan dikan ke dosen untuk direvisi.</p>
                     </div>
 
                     <div class="mb-3">

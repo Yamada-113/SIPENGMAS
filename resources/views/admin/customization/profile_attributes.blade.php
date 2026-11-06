@@ -9,7 +9,7 @@
                 <p class="text-muted small mb-0">Kelola Fakultas, Prodi, dan Jabatan Fungsional.</p>
             </div>
             <a href="{{ route('admin.customization') }}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm rounded-pill">
-                <i class="bi  me-1"></i> Kembali ke Hub
+                <i class="bi  me-1"></i>  ke Hub
             </a>
         </div>
 

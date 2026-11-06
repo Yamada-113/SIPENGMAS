@@ -72,7 +72,7 @@
                     <path fill-rule="evenodd"
                         d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
                 </svg>
-                <span>Kembali</span>
+                <span></span>
             </a>
             <div style="width: 100px;"></div>
         </div>
@@ -89,7 +89,7 @@
         @if ($errors->any())
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    showFloatingAlert("Terdapat kolom yang belum diisi atau salah. Mohon periksa kembali.", 'danger');
+                    showFloatingAlert("Terdapat kolom yang belum diisi atau salah. Mohon periksa .", 'danger');
                 });
             </script>
         @endif
@@ -679,7 +679,7 @@
                         <path fill-rule="evenodd"
                             d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
                     </svg>
-                    <span>Kembali</span>
+                    <span></span>
                 </a>
                 <button type="submit" class="btn btn-primary btn-action-control d-flex align-items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -1150,7 +1150,7 @@
                         const result = await response.json();
                         if (response.ok && result.success) {
                             hasSignature = true;
-                            showFloatingAlert("Tanda tangan berhasil disimpan! Silakan klik 'Ajukan' kembali.", "success");
+                            showFloatingAlert("Tanda tangan berhasil disimpan! Silakan klik 'Ajukan' .", "success");
                             const modalEl = document.getElementById('modalUploadSignature');
                             const modal = bootstrap.Modal.getInstance(modalEl);
                             modal.hide();
@@ -1180,7 +1180,7 @@
                     total += intValue;
                 });
 
-                // Format kembali ke Rupiah untuk ditampilkan
+                // Format  ke Rupiah untuk ditampilkan
                 const formattedTotal = total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
                 
                 // Update field total

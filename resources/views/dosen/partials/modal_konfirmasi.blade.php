@@ -43,7 +43,7 @@
                     <h6 class="fw-bold text-dark mb-3">{{ $item->proposal->identitas->judul ?? 'Proposal ini' }}</h6>
                     <div class="alert alert-warning small text-start">
                         <i class="bi bi-exclamation-triangle me-1"></i>
-                        Jika Anda <b>menolak</b> proposal akan selesai dan pengusul harus mengajukan kembali.
+                        Jika Anda <b>menolak</b> proposal akan selesai dan pengusul harus mengajukan .
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center border-0 pb-4">

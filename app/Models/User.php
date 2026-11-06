@@ -75,7 +75,7 @@ class User extends Authenticatable implements LdapAuthenticatable
     protected function casts(): array
     {
         return [
-            'password' => 'hashed', // AKTIFKAN KEMBALI agar login lokal bisa validasi
+            'password' => 'hashed', // AKTIFKAN  agar login lokal bisa validasi
         ];
     }
 

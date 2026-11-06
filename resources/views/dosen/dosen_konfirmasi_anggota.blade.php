@@ -10,7 +10,7 @@
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
             <div>
                 <a href="{{ route('dosen.dashboard') }}" class="btn btn-secondary btn-action-control shadow-sm">
-                    <i class="bi  me-1"></i> Kembali
+                    <i class="bi  me-1"></i> 
                 </a>
             </div>
             <div class="d-flex gap-2">

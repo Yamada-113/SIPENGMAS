@@ -10,15 +10,15 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <div class="container pb-5">
-        {{-- Header & Kembali --}}
+        {{-- Header &  --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h4 class="fw-bold mb-1">Detail Validasi Proposal</h4>
                 <p class="text-muted mb-0">Tinjau kelayakan proposal sebelum memberikan keputusan.</p>
             </div>
-            {{-- Tombol Kembali mengarah ke halaman list validasi --}}
+            {{-- Tombol  mengarah ke halaman list validasi --}}
             <a href="{{ route('wakil_dekan3.validasi') }}" class="btn btn-secondary d-flex align-items-center shadow-sm">
-                <i class="bi  me-2"></i> Kembali ke Daftar
+                <i class="bi  me-2"></i>  ke Daftar
             </a>
         </div>
 

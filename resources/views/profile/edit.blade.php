@@ -8,7 +8,7 @@
             $role = auth()->user()->role ?? '';
         @endphp
 
-        <!-- Judul Halaman (Tombol Kembali manual sudah dihapus agar tidak dobel) -->
+        <!-- Judul Halaman (Tombol  manual sudah dihapus agar tidak dobel) -->
         <div class="mb-4">
             <h4 class="fw-bold mb-1 text-primary">Profil Saya</h4>
             <p class="text-muted mb-0">Kelola informasi akun dan identitas akademik Anda.</p>

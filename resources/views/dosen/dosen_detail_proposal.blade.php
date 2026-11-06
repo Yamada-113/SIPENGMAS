@@ -15,14 +15,14 @@
    
 
     <div class="container pb-5">
-        {{-- Header & Tombol Kembali --}}
+        {{-- Header & Tombol  --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h4 class="fw-bold mb-1">Detail Proposal Usulan</h4>
-                <p class="text-muted mb-0">Tinjau kembali data proposal.</p>
+                <p class="text-muted mb-0">Tinjau  data proposal.</p>
             </div>
             <a href="{{ route('dosen.dashboard') }}" class="btn btn-secondary d-flex align-items-center shadow-sm">
-                <i class="bi  me-2"></i> Kembali ke Dashboard
+                <i class="bi  me-2"></i>  ke Dashboard
             </a>
         </div>
 
