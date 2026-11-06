@@ -201,6 +201,43 @@
     </nav>
 
     <main class="py-4">
+        @php
+            $currentRole = auth()->check() ? auth()->user()->role : '';
+            $navBackRoute = 'login';
+            if (str_contains($currentRole, 'Admin')) {
+                $navBackRoute = 'admin.dashboard';
+            } elseif (str_contains($currentRole, 'Dosen')) {
+                $navBackRoute = 'dosen.dashboard';
+            } elseif (str_contains($currentRole, 'Wakil Dekan')) {
+                $navBackRoute = 'wakil_dekan3.dashboard';
+            } elseif (str_contains($currentRole, 'Dekan')) {
+                $navBackRoute = 'dekan.dashboard';
+            } elseif (str_contains($currentRole, 'Kepala Pusat')) {
+                $navBackRoute = 'kepala_pusat.dashboard';
+            } elseif (str_contains($currentRole, 'Wakil Rektor')) {
+                $navBackRoute = 'wakil_rektor.dashboard';
+            }
+            $isNotDashboard = !request()->routeIs('*.dashboard');
+            $previousUrl = url()->previous();
+            $homeUrl = route($navBackRoute);
+        @endphp
+
+        <!-- Tombol Kembali dan Home otomatis di semua halaman (kecuali dashboard) -->
+        @if ($isNotDashboard)
+            <div class="container mb-3">
+                <div class="d-flex justify-content-start align-items-center">
+                    <div class="d-flex gap-2">
+                        <a href="{{ $previousUrl }}" class="btn btn-secondary btn-sm d-flex align-items-center">
+                            <i class="bi bi-arrow-left me-1"></i> Kembali
+                        </a>
+                        <a href="{{ $homeUrl }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+                            <i class="bi bi-house-door me-1"></i> Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         @yield('content')
     </main>
 
