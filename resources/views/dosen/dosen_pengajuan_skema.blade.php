@@ -8,15 +8,15 @@
         {{-- HEADER & TOMBOL  --}}
         <div class="d-flex align-items-center justify-content-between mb-4">
             {{-- [FIX] Arrow di Kiri --}}
-            <a href="{{ route('dosen.dashboard') }}"
-                class="btn btn-secondary btn-action-control d-flex align-items-center gap-2">
+            <!-- <a href="{{ route('dosen.dashboard') }}"
+                class="btn btn-secondary  d-flex align-items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi " viewBox="0 0 16 16">
                     <path fill-rule="evenodd"
                         d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
                 </svg>
                 <span></span>
-            </a>
+            </a> -->
 
             <div style="width: 100px;"></div>
         </div>
@@ -74,7 +74,7 @@
         {{-- FOOTER: TOMBOL LANJUT --}}
         <div class="d-flex justify-content-end mt-4">
             {{-- [FIX] Arrow di Kanan --}}
-            <button id="btnLanjut" class="btn btn-primary btn-action-control d-flex align-items-center gap-2" disabled>
+            <button id="btnLanjut" class="btn btn-primary  d-flex align-items-center gap-2" disabled>
                 <span>Lanjut</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi bi-arrow-right" viewBox="0 0 16 16">
@@ -162,7 +162,7 @@
 
 @push('styles')
     <style>
-        .btn-action-control {
+        . {
             font-weight: 600;
             min-width: 120px;
             /* Tambahan agar isi tombol rata tengah */

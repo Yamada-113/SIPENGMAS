@@ -222,15 +222,15 @@
             $homeUrl = route($navBackRoute);
         @endphp
 
-        <!-- Tombol Kembali dan Home otomatis di semua halaman (kecuali dashboard) -->
+        <!-- Tombol Kembali dan Home di pojok kiri atas konten -->
         @if ($isNotDashboard)
             <div class="container mb-3">
                 <div class="d-flex justify-content-start align-items-center">
                     <div class="d-flex gap-2">
-                        <a href="{{ $previousUrl }}" class="btn btn-secondary btn-sm d-flex align-items-center">
+                        <a href="{{ $previousUrl }}" class="btn btn-secondary btn-sm d-flex align-items-center shadow-sm">
                             <i class="bi bi-arrow-left me-1"></i> Kembali
                         </a>
-                        <a href="{{ $homeUrl }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+                        <a href="{{ $homeUrl }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center shadow-sm">
                             <i class="bi bi-house-door me-1"></i> Home
                         </a>
                     </div>

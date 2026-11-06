@@ -12,9 +12,6 @@
                 <h4 class="fw-bold mb-1">Detail Rekapitulasi Proposal</h4>
                 <p class="text-muted mb-0">Mode tinjauan administrator (Read-Only).</p>
             </div>
-             d-flex align-items-center shadow-sm">
-                <i class="bi  me-2"></i> Kembali
-            </a>
         </div>
 
         <div class="row">

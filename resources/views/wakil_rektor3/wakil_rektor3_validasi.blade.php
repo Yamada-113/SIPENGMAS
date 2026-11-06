@@ -9,7 +9,7 @@
         {{-- Toolbar --}}
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
             <div>
-                <a href="{{ route('wakil_rektor.dashboard') }}" class="btn btn-secondary btn-action-control shadow-sm">
+                <a href="{{ route('wakil_rektor.dashboard') }}" class="btn btn-secondary  shadow-sm">
                     <i class="bi  me-1"></i> Dashboard
                 </a>
             </div>
