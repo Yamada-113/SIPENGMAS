@@ -44,6 +44,17 @@ class LoginRequest extends FormRequest
             if (
                 $user &&
                 $user->locked_until &&
+                now()->gte($user->locked_until)
+            ) {
+                $user->update([
+                    'failed_login_attempts' => 0,
+                    'locked_until' => null,
+                ]);
+            }
+
+            if (
+                $user &&
+                $user->locked_until &&
                 now()->lt($user->locked_until)
             ) {
 
