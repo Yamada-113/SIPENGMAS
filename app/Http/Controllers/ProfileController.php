@@ -27,7 +27,7 @@ class ProfileController extends Controller
             'jabatans' => $jabatans,
             'fakultasData' => $fakultasData,
             'google_scholar_id' => $request->google_scholar_id,
-            'scopus_id' => ['nullable', 'string', 'max:100'],
+            'scopus_id' => $request->scopus_id,
         ]);
     }
 
@@ -37,9 +37,11 @@ class ProfileController extends Controller
             'fakultas'           => ['required', 'string', 'max:100'],
             'prodi'              => ['required', 'string', 'max:100'],
             'jabatan_fungsional' => ['required', 'string', 'max:100'],
-            'google_scholar_id' =>  ['required', 'string', 'max:100'],
-            'tanda_tangan'       => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'], // Max 2MB
-        ]);
+            'google_scholar_id'  =>  ['required', 'string', 'max:100'],
+             'tanda_tangan'      => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
+            ], [
+            'scopus_id.regex'    => 'Scopus ID harus berupa angka dan maksimal 11 digit.',
+            ]);
 
         $user = $request->user();
         $userData = collect($validated)->except(['tanda_tangan'])->toArray();
