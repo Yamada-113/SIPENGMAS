@@ -69,6 +69,22 @@
                                 @endforeach
                             </select>
                         </div>
+
+                        {{-- Scopus ID --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">Scopus ID</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control @error('scopus_id') is-invalid @enderror"
+                                    name="scopus_id" value="{{ old('scopus_id', Auth::user()->scopus_id ?? '') }}"
+                                    placeholder="5720000000">
+                            </div>
+                            <div class="form-text small text-muted">
+                                Opsional. ID profil Scopus Anda.
+                            </div>
+                            @error('scopus_id')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="modal-footer bg-light justify-content-end">

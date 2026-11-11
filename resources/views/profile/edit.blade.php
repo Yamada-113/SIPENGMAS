@@ -8,7 +8,7 @@
             $role = auth()->user()->role ?? '';
         @endphp
 
-        <!-- Judul Halaman (Tombol  manual sudah dihapus agar tidak dobel) -->
+        <!-- Judul Halaman (Tombol manual sudah dihapus agar tidak dobel) -->
         <div class="mb-4">
             <h4 class="fw-bold mb-1 text-primary">Profil Saya</h4>
             <p class="text-muted mb-0">Kelola informasi akun dan identitas akademik Anda.</p>
@@ -194,6 +194,27 @@
                                 @enderror
                             </div>
 
+                            <!-- Tambahan Scopus ID di bawah Google Scholar ID -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-muted">Scopus ID</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control @error('scopus_id') is-invalid @enderror"
+                                        id="scopus_id" name="scopus_id"
+                                        value="{{ old('scopus_id', $user->scopus_id ?? '') }}"
+                                        placeholder="57200000000">
+                                    
+                                    <button type="button" class="btn btn-outline-secondary" id="btn-open-scopus" title="Buka Profil Scopus">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text small text-muted">
+                                    Opsional. ID profil Scopus Anda.
+                                </div>
+                                @error('scopus_id')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                         </div>
                     </div>
 
@@ -281,6 +302,23 @@
                         return;
                     }
                     const url = `https://scholar.google.com/citations?user=${encodeURIComponent(scholarId)}`;
+                    window.open(url, '_blank');
+                });
+            }
+
+            // Tombol Scopus
+            const btnScopus = document.getElementById('btn-open-scopus');
+            const inputScopus = document.getElementById('scopus_id');
+
+            if (btnScopus && inputScopus) {
+                btnScopus.addEventListener('click', function() {
+                    const scopusId = inputScopus.value.trim();
+                    if (!scopusId) {
+                        alert('Silakan isi Scopus ID terlebih dahulu!');
+                        inputScopus.focus();
+                        return;
+                    }
+                    const url = `https://www.scopus.com/authid/detail.uri?authorId=${encodeURIComponent(scopusId)}`;
                     window.open(url, '_blank');
                 });
             }
