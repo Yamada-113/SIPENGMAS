@@ -27,6 +27,7 @@ class ProfileController extends Controller
             'jabatans' => $jabatans,
             'fakultasData' => $fakultasData,
             'google_scholar_id' => $request->google_scholar_id,
+            'scopus_id' => ['nullable', 'string', 'max:100'],
         ]);
     }
 

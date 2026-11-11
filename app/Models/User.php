@@ -30,6 +30,7 @@ class User extends Authenticatable implements LdapAuthenticatable
         'failed_login_attempts',
         'locked_until',
         'role',
+        'scopus_id',
         'tanda_tangan', // <--- TAMBAHKAN INI
         'guid',
         'domain'
