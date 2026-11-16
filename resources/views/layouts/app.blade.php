@@ -262,8 +262,6 @@
 
                 window.Echo.private(`App.Models.User.${userId}`)
                     .notification((notification) => {
-                        console.log("Realtime Notif:", notification);
-
                         const notifBadge = document.getElementById('notif-badge');
                         if (notifBadge) {
                             notifBadge.classList.remove('d-none');
