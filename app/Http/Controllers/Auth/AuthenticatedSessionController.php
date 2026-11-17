@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -15,10 +16,12 @@ class AuthenticatedSessionController extends Controller
     {
         return view('auth.login');
     }
+
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
         $request->session()->regenerate();
+        $request->session()->put('auth.login_at', now()->timestamp);
         $user = Auth::user();
         if ($user->role === 'Dosen') {
             return redirect()->route('dosen.dashboard');
@@ -33,6 +36,7 @@ class AuthenticatedSessionController extends Controller
         } elseif ($user->role === 'Wakil Rektor 3') {
             return redirect()->route('wakil_rektor.dashboard');
         }
+
         return redirect()->intended(route('dosen.dashboard'));
     }
 
@@ -41,6 +45,14 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+        Cookie::queue(
+            Cookie::forget(
+                config('session.cookie'),
+                config('session.path'),
+                config('session.domain')
+            )
+        );
+
         return redirect()->route('login');
     }
 }
