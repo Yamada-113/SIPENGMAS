@@ -16,7 +16,7 @@ class LoginRequest extends FormRequest
 
     private const DECAY_SECONDS = 600;
 
-    private const INVALID_CREDENTIALS_MESSAGE = 'NPM atau password salah';
+    private const INVALID_CREDENTIALS_MESSAGE = 'Username atau password salah';
 
     public function authorize(): bool
     {

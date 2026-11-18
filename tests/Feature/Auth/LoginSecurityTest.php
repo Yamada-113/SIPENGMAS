@@ -39,7 +39,7 @@ class LoginSecurityTest extends TestCase
                 'password' => 'test-password',
             ])
                 ->assertUnprocessable()
-                ->assertJsonPath('errors.username.0', 'NPM atau password salah');
+                ->assertJsonPath('errors.username.0', 'Username atau password salah');
         }
 
         $this->postJson('/login', [
@@ -77,7 +77,7 @@ class LoginSecurityTest extends TestCase
             'password' => 'backend-test-password',
         ])
             ->assertUnprocessable()
-            ->assertJsonPath('errors.username.0', 'NPM atau password salah');
+            ->assertJsonPath('errors.username.0', 'Username atau password salah');
 
         Log::shouldHaveReceived('error')
             ->once()
