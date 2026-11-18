@@ -7,11 +7,7 @@
         @include('shared.alert_script')
 
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-            <div>
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary  shadow-sm">
-                    <i class="bi  me-1"></i> 
-                </a>
-            </div>
+            
 
             <div class="d-flex gap-2">
                 <a href="{{ route('admin.rekap.export', ['year' => request('year', date('Y')), 'status' => request('tab', 'proses')]) }}"
@@ -118,7 +114,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const activeTab = urlParams.get('tab') || 'proses';
 
-            const triggerEl = document.querySelector(`#${activeTab}-tab`);
+            const triggerEl = document.querySelector(#${activeTab}-tab);
             if (triggerEl) {
                 new bootstrap.Tab(triggerEl).show();
             }
@@ -138,7 +134,8 @@
         #rekapTab .nav-item .nav-link.active {
             color: #378a75 !important;
             background-color: #fff;
-            border-color: #dee2e6 #dee2e6 #fff;
+            border-color: #dee2e6 
+#dee2e6 #fff;
             font-weight: 600;
         }
 
@@ -157,3 +154,4 @@
         }
     </style>
 @endpush
+ 

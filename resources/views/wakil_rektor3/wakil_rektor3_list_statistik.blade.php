@@ -5,13 +5,7 @@
 @section('content')
     <div class="container">
         {{-- 1. TOOLBAR --}}
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-            <div>
-                {{-- Route  ke Dashboard Warek 3 --}}
-                <a href="{{ route('wakil_rektor.dashboard') }}" class="btn btn-secondary  shadow-sm">
-                    <i class="bi  me-1"></i> 
-                </a>
-            </div>
+        <div class="d-flex justify-content-end align-items-center flex-wrap gap-2 mb-3">
             <div class="d-flex gap-2">
                 @include('shared.toolbar_filter')
             </div>
@@ -75,7 +69,8 @@
 
                                         {{-- Accessor Skema --}}
                                         <td class="py-3 text-muted small fw-semibold">
-                                            {{ $item->skemaRef->nama ?? '-' }}</span>
+                                            {{ $item->skemaRef->nama ?? '-' }}
+                                        </td>
 
                                         <td class="text-center py-3 fw-bold">{{ $item->tahun_pelaksanaan }}</td>
 

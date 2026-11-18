@@ -5,11 +5,7 @@
 @section('content')
     <div class="container">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-            <div>
-                <a href="{{ route('dekan.dashboard') }}" class="btn btn-secondary  shadow-sm">
-                    <i class="bi  me-1"></i> 
-                </a>
-            </div>
+            
             <div class="d-flex gap-2">
                 @include('shared.toolbar_filter')
             </div>
