@@ -69,7 +69,7 @@ Route::get('/', function () {
 // =========================================================================
 // AUTHENTICATED ROUTES
 // =========================================================================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'session.absolute'])->group(function () {
 
     // --- UTILITY & PROFILE ---
     Route::get('/mark-all-read', [NotificationController::class, 'markAllRead'])->name('mark_all_read');

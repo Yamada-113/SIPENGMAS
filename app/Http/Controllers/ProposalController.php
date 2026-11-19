@@ -59,10 +59,10 @@ class ProposalController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Error Approve Proposal: " . $e->getMessage());
+            Log::error('Proposal approval failed', ['exception' => $e]);
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+                'message' => 'Proposal gagal divalidasi. Silakan coba lagi.',
             ], 500);
         }
     }

@@ -81,7 +81,7 @@
         @if (session('error'))
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    showFloatingAlert("{{ session('error') }}", 'danger');
+                    showFloatingAlert(@json(session('error')), 'danger');
                 });
             </script>
         @endif
@@ -694,13 +694,18 @@
             alertDiv.className = `alert alert-${type} shadow-lg alert-dismissible fade show`;
             alertDiv.style.marginBottom = '10px';
             alertDiv.role = 'alert';
-            alertDiv.innerHTML = `
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
-                    <div>${message}</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
+            const content = document.createElement('div');
+            content.className = 'd-flex align-items-center';
+            const icon = document.createElement('i');
+            icon.className = 'bi bi-exclamation-circle-fill me-2 fs-5';
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            const closeButton = document.createElement('button');
+            closeButton.type = 'button';
+            closeButton.className = 'btn-close';
+            closeButton.setAttribute('data-bs-dismiss', 'alert');
+            content.append(icon, messageElement, closeButton);
+            alertDiv.appendChild(content);
             container.appendChild(alertDiv);
             setTimeout(() => {
                 alertDiv.classList.remove('show');
@@ -713,7 +718,39 @@
             let hasSignature = @json($userHasSignature);
 
             // DATA USER LOGIN (Untuk validasi diri sendiri)
-            const currentUserNidn = "{{ Auth::user()->nidn }}";
+            const currentUserNidn = @json(Auth::user()->nidn);
+
+            function createTextCell(value, className = '') {
+                const cell = document.createElement('td');
+                cell.className = className;
+                cell.textContent = value;
+                return cell;
+            }
+
+            function createHiddenInput(name, value) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                return input;
+            }
+
+            function createRemoveCell(withIcon = false) {
+                const cell = document.createElement('td');
+                cell.className = 'text-center';
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn btn-danger btn-sm remove-row';
+                if (withIcon) {
+                    const icon = document.createElement('i');
+                    icon.className = 'bi bi-trash';
+                    button.appendChild(icon);
+                } else {
+                    button.textContent = 'Hapus';
+                }
+                cell.appendChild(button);
+                return cell;
+            }
 
             // 1. AUTO SCROLL KE ERROR
             const firstErrorBackend = document.querySelector('.is-invalid');
@@ -746,8 +783,16 @@
                 btnElement.disabled = true;
 
                 try {
-                    const response = await fetch(`{{ route('api.ldap_check') }}?id=${id}`);
+                    const response = await fetch(
+                        `{{ route('api.ldap_check') }}?id=${encodeURIComponent(id)}`,
+                        { headers: { Accept: 'application/json' } }
+                    );
                     const data = await response.json();
+                    if (!response.ok) {
+                        showFloatingAlert(data.message || "Permintaan tidak dapat diproses.", "danger");
+                        document.getElementById(targetInputId).value = "";
+                        return;
+                    }
                     if (data.success) {
                         document.getElementById(targetInputId).value = data.nama;
                         showFloatingAlert("Data ditemukan: " + data.nama, "success");
@@ -868,29 +913,37 @@
                         return showFloatingAlert("Anggota dengan NIDN ini sudah ditambahkan.", "warning");
                     }
 
-                    // Buat Baris Tabel Baru
-                    const row = `
-                        <tr>
-                            <td class="text-center row-number">${index + 1}</td>
-                            <td>
-                                <div class="fw-bold">${nama}</div>
-                                <div class="text-muted small">${nidn}</div>
-                                <input type="hidden" name="anggota_dosen[${index}][nidn]" value="${nidn}">
-                                <input type="hidden" name="anggota_dosen[${index}][nama]" value="${nama}">
-                                <input type="hidden" name="anggota_dosen[${index}][fakultas_dosen]" value="${fakultas}">
-                                <input type="hidden" name="anggota_dosen[${index}][prodi_dosen]" value="${prodi}">
-                                <input type="hidden" name="anggota_dosen[${index}][peran]" value="${peran}">
-                            </td>
-                            <td>${fakultas}</td>
-                            <td>${prodi}</td>
-                            <td><div class="role-text">${peran}</div></td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-danger btn-sm remove-row"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-
-                    tableBody.insertAdjacentHTML('beforeend', row);
+                    const row = document.createElement('tr');
+                    const numberCell = createTextCell(String(index + 1), 'text-center row-number');
+                    const identityCell = document.createElement('td');
+                    const nameElement = document.createElement('div');
+                    nameElement.className = 'fw-bold';
+                    nameElement.textContent = nama;
+                    const nidnElement = document.createElement('div');
+                    nidnElement.className = 'text-muted small';
+                    nidnElement.textContent = nidn;
+                    identityCell.append(nameElement, nidnElement);
+                    identityCell.append(
+                        createHiddenInput(`anggota_dosen[${index}][nidn]`, nidn),
+                        createHiddenInput(`anggota_dosen[${index}][nama]`, nama),
+                        createHiddenInput(`anggota_dosen[${index}][fakultas_dosen]`, fakultas),
+                        createHiddenInput(`anggota_dosen[${index}][prodi_dosen]`, prodi),
+                        createHiddenInput(`anggota_dosen[${index}][peran]`, peran)
+                    );
+                    const roleCell = document.createElement('td');
+                    const roleText = document.createElement('div');
+                    roleText.className = 'role-text';
+                    roleText.textContent = peran;
+                    roleCell.appendChild(roleText);
+                    row.append(
+                        numberCell,
+                        identityCell,
+                        createTextCell(fakultas),
+                        createTextCell(prodi),
+                        roleCell,
+                        createRemoveCell(true)
+                    );
+                    tableBody.appendChild(row);
                     updateAllRoles();
                     
                     // Reset Form
@@ -926,20 +979,33 @@
                         return showFloatingAlert("Mahasiswa dengan NPM ini sudah ditambahkan.", "warning");
                     }
 
-                    const row = `<tr>
-                        <td class="text-center row-number">${index + 1}</td>
-                        <td><strong>${nama}</strong><br><small>${npm}</small>
-                            <input type="hidden" name="anggota_mhs[${index}][npm]" value="${npm}">
-                            <input type="hidden" name="anggota_mhs[${index}][nama]" value="${nama}">
-                            <input type="hidden" name="anggota_mhs[${index}][prodi]" value="${prodi}">
-                            <input type="hidden" name="anggota_mhs[${index}][peran]" value="${peran}">
-                        </td>
-                        <td>${prodi}</td>
-                        <td><div class="role-text">${peran}</div></td>
-                        <td class="text-center"><button type="button" class="btn btn-danger btn-sm remove-row">Hapus</button></td>
-                    </tr>`;
-
-                    tableBody.insertAdjacentHTML('beforeend', row);
+                    const row = document.createElement('tr');
+                    const numberCell = createTextCell(String(index + 1), 'text-center row-number');
+                    const identityCell = document.createElement('td');
+                    const nameElement = document.createElement('strong');
+                    nameElement.textContent = nama;
+                    const npmElement = document.createElement('small');
+                    npmElement.textContent = npm;
+                    identityCell.append(nameElement, document.createElement('br'), npmElement);
+                    identityCell.append(
+                        createHiddenInput(`anggota_mhs[${index}][npm]`, npm),
+                        createHiddenInput(`anggota_mhs[${index}][nama]`, nama),
+                        createHiddenInput(`anggota_mhs[${index}][prodi]`, prodi),
+                        createHiddenInput(`anggota_mhs[${index}][peran]`, peran)
+                    );
+                    const roleCell = document.createElement('td');
+                    const roleText = document.createElement('div');
+                    roleText.className = 'role-text';
+                    roleText.textContent = peran;
+                    roleCell.appendChild(roleText);
+                    row.append(
+                        numberCell,
+                        identityCell,
+                        createTextCell(prodi),
+                        roleCell,
+                        createRemoveCell()
+                    );
+                    tableBody.appendChild(row);
                     updateAllRoles();
                     document.getElementById('npm_input').value = "";
                     document.getElementById('nama_mhs_form').value = "";

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -174,7 +175,12 @@ class ProfileController extends Controller
                 return response()->json(['success' => true, 'message' => 'Tanda tangan berhasil disimpan.']);
             }
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan server: ' . $e->getMessage()], 500);
+            Log::error('Signature upload failed', ['exception' => $e]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Tanda tangan gagal disimpan. Silakan coba lagi.',
+            ], 500);
         }
 
         return response()->json(['success' => false, 'message' => 'File tidak ditemukan.'], 400);
