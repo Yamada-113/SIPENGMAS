@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dosen;
 
 use App\Http\Controllers\Controller;
+use App\Services\IncidentReporter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -91,7 +92,9 @@ class DosenKonfirmasiAnggotaController extends Controller
 
             return back()->with('success', 'Berhasil bergabung dengan proposal.');
         } catch (Exception $e) {
-            return back()->with('error', $e->getMessage());
+            $incidentId = app(IncidentReporter::class)->report($e, request(), 'proposal_invitation_acceptance');
+
+            return back()->with('error', app(IncidentReporter::class)->message($incidentId));
         }
     }
 
@@ -108,7 +111,9 @@ class DosenKonfirmasiAnggotaController extends Controller
             });
             return back()->with('success', 'Undangan ditolak. Proposal dibatalkan.');
         } catch (Exception $e) {
-            return back()->with('error', $e->getMessage());
+            $incidentId = app(IncidentReporter::class)->report($e, request(), 'proposal_invitation_rejection');
+
+            return back()->with('error', app(IncidentReporter::class)->message($incidentId));
         }
     }
 }

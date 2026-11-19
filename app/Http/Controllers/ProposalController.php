@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Proposal;
+use App\Services\IncidentReporter;
 use App\Services\NotificationFlowService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ProposalController extends Controller
 {
@@ -59,10 +59,11 @@ class ProposalController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Error Approve Proposal: " . $e->getMessage());
+            $incidentId = app(IncidentReporter::class)->report($e, $request, 'proposal_approval');
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+                'message' => app(IncidentReporter::class)->message($incidentId),
+                'incident_id' => $incidentId,
             ], 500);
         }
     }
@@ -94,9 +95,11 @@ class ProposalController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            $incidentId = app(IncidentReporter::class)->report($e, $request, 'proposal_rejection');
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menolak proposal.'
+                'message' => app(IncidentReporter::class)->message($incidentId),
+                'incident_id' => $incidentId,
             ], 500);
         }
     }

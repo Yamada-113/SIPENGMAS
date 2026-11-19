@@ -1,5 +1,20 @@
 <?php
 
+$ldapSsl = (bool) env('LDAP_SSL', true);
+$ldapTls = (bool) env('LDAP_TLS', false);
+
+if ($ldapSsl === $ldapTls) {
+    throw new LogicException('Enable exactly one encrypted LDAP transport: LDAPS or StartTLS.');
+}
+
+$ldapOptions = [
+    LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_DEMAND,
+];
+
+if ($ldapCaCert = env('LDAP_CA_CERT')) {
+    $ldapOptions[LDAP_OPT_X_TLS_CACERTFILE] = $ldapCaCert;
+}
+
 return [
 
     /*
@@ -29,13 +44,14 @@ return [
     'connections' => [
         'default' => [
             'hosts' => [env('LDAP_HOSTS', 'pdc.yarsi.ac.id')],
-            'username' => env('LDAP_USERNAME', null), // Akan bernilai null
-            'password' => env('LDAP_PASSWORD', null), // Akan bernilai null
-            'port' => env('LDAP_PORT', 389),
+            'username' => env('LDAP_USERNAME', null),
+            'password' => env('LDAP_PASSWORD', null),
+            'port' => env('LDAP_PORT', $ldapSsl ? 636 : 389),
             'base_dn' => env('LDAP_BASE_DN', 'dc=yarsi,dc=ac,dc=id'),
             'timeout' => env('LDAP_TIMEOUT', 5),
-            'use_ssl' => env('LDAP_SSL', false),
-            'use_tls' => env('LDAP_TLS', false),
+            'use_ssl' => $ldapSsl,
+            'use_tls' => $ldapTls,
+            'options' => $ldapOptions,
         ],
     ],
 
@@ -51,7 +67,7 @@ return [
     */
 
     'logging' => [
-        'enabled' => env('LDAP_LOGGING', true),
+        'enabled' => false,
         'channel' => env('LOG_CHANNEL', 'stack'),
         'level' => env('LOG_LEVEL', 'info'),
     ],

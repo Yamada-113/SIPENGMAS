@@ -4,6 +4,7 @@ namespace App\Http\Controllers\KepalaPusat;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Services\IncidentReporter;
 use App\Models\Proposal;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -109,7 +110,9 @@ class KepalaPusatValidasiController extends Controller
             $pesan = $request->keputusan == 'terima' ? 'Proposal berhasil disetujui.' : 'Proposal telah ditolak.';
             return redirect()->route('kepala_pusat.validasi')->with('success', $pesan);
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            $incidentId = app(IncidentReporter::class)->report($e, $request, 'proposal_validation');
+
+            return back()->with('error', app(IncidentReporter::class)->message($incidentId));
         }
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\SecurityAuditLogger;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -37,7 +38,7 @@ class AdminManageUserController extends Controller
             'password' => 'required|string|min:3',
             'role' => 'required',
         ]);
-        User::create([
+        $user = User::create([
             'nidn' => $request->nidn,
             'name' => $request->name,
             'fakultas' => $request->fakultas,
@@ -46,6 +47,18 @@ class AdminManageUserController extends Controller
             'role' => $request->role,
             'password' => Hash::make($request->password),
         ]);
+        app(SecurityAuditLogger::class)->record(
+            $request,
+            'role_assigned',
+            'success',
+            $request->user()?->username,
+            [
+                'target_npm' => $user->username,
+                'role_before' => null,
+                'role_after' => $user->role,
+            ],
+        );
+
         return redirect()->back()->with('success', 'Akun berhasil ditambahkan!');
     }
 
@@ -56,18 +69,36 @@ class AdminManageUserController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username,' . $user->id,
             'password' => 'nullable|string|min:3',
+            'role' => 'required|string|max:255',
         ]);
+        $previousRole = $user->role;
         $data = [
             'nidn' => $request->nidn,
             'name' => $request->name,
             'fakultas' => $request->fakultas,
             'prodi' => $request->prodi,
             'username' => $request->username,
+            'role' => $request->role,
         ];
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
         $user->update($data);
+
+        if ($previousRole !== $user->role) {
+            app(SecurityAuditLogger::class)->record(
+                $request,
+                'role_changed',
+                'success',
+                $request->user()?->username,
+                [
+                    'target_npm' => $user->username,
+                    'role_before' => $previousRole,
+                    'role_after' => $user->role,
+                ],
+            );
+        }
+
         return redirect()->back()->with('success', 'Data akun berhasil diperbarui!');
     }
 }

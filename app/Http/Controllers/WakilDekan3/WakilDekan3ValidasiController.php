@@ -4,9 +4,9 @@ namespace App\Http\Controllers\WakilDekan3;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Services\IncidentReporter;
 use App\Models\Proposal;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Services\NotificationFlowService;
 
 class WakilDekan3ValidasiController extends Controller
@@ -69,8 +69,9 @@ class WakilDekan3ValidasiController extends Controller
             return back()->with('success', $pesan);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Error Validasi Wadek 3: " . $e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            $incidentId = app(IncidentReporter::class)->report($e, $request, 'proposal_validation');
+
+            return back()->with('error', app(IncidentReporter::class)->message($incidentId));
         }
     }
 

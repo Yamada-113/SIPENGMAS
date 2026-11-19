@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dosen;
 
 use App\Http\Controllers\Controller;
+use App\Services\IncidentReporter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -32,7 +33,9 @@ class DosenLampiranProposalController extends Controller
                 return redirect()->back()->with('success', ucfirst($request->kategori) . ' berhasil disimpan!');
             }
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            $incidentId = app(IncidentReporter::class)->report($e, $request, 'proposal_attachment_upload');
+
+            return redirect()->back()->with('error', app(IncidentReporter::class)->message($incidentId));
         }
         return redirect()->back()->with('error', 'Gagal mengunggah file.');
     }
