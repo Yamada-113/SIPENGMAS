@@ -59,18 +59,11 @@ class ProposalController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-<<<<<<< Updated upstream
-            Log::error("Error Approve Proposal: " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
-=======
             $incidentId = app(IncidentReporter::class)->report($e, $request, 'proposal_approval');
             return response()->json([
                 'success' => false,
                 'message' => app(IncidentReporter::class)->message($incidentId),
                 'incident_id' => $incidentId,
->>>>>>> Stashed changes
             ], 500);
         }
     }

@@ -28,6 +28,7 @@ class ProfileController extends Controller
             'jabatans' => $jabatans,
             'fakultasData' => $fakultasData,
             'google_scholar_id' => $request->google_scholar_id,
+            'scopus_id' => $request->scopus_id,
         ]);
     }
 
@@ -37,8 +38,13 @@ class ProfileController extends Controller
             'fakultas'           => ['required', 'string', 'max:100'],
             'prodi'              => ['required', 'string', 'max:100'],
             'jabatan_fungsional' => ['required', 'string', 'max:100'],
-            'google_scholar_id' =>  ['required', 'string', 'max:100'],
-            'tanda_tangan'       => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'], // Max 2MB
+            'google_scholar_id'  => ['required', 'string', 'max:100'],
+            'scopus_id'          => ['nullable', 'regex:/^[0-9]{1,11}$/'],
+
+            'tanda_tangan'       => ['nullable','image','mimes:png,jpg,jpeg','max:2048'],
+        ], [
+            'scopus_id.regex' =>
+                'Scopus ID harus berupa angka dan maksimal 11 digit.',
         ]);
 
         $user = $request->user();
@@ -169,9 +175,6 @@ class ProfileController extends Controller
                 return response()->json(['success' => true, 'message' => 'Tanda tangan berhasil disimpan.']);
             }
         } catch (\Exception $e) {
-<<<<<<< Updated upstream
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan server: ' . $e->getMessage()], 500);
-=======
             $incidentId = app(IncidentReporter::class)->report($e, $request, 'signature_upload');
 
             return response()->json([
@@ -179,7 +182,6 @@ class ProfileController extends Controller
                 'message' => app(IncidentReporter::class)->message($incidentId),
                 'incident_id' => $incidentId,
             ], 500);
->>>>>>> Stashed changes
         }
 
         return response()->json(['success' => false, 'message' => 'File tidak ditemukan.'], 400);

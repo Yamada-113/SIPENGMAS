@@ -67,13 +67,9 @@ class WakilRektor3ValidasiController extends Controller
             $pesan = $request->keputusan == 'terima' ? 'Proposal berhasil disetujui dan didanai.' : 'Proposal telah ditolak.';
             return redirect()->route('wakil_rektor.validasi')->with('success', $pesan);
         } catch (\Exception $e) {
-<<<<<<< Updated upstream
-            return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
-=======
             $incidentId = app(IncidentReporter::class)->report($e, $request, 'proposal_validation');
 
             return back()->with('error', app(IncidentReporter::class)->message($incidentId));
->>>>>>> Stashed changes
         }
     }
 }

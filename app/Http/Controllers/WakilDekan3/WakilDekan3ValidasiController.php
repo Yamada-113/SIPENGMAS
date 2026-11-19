@@ -69,14 +69,9 @@ class WakilDekan3ValidasiController extends Controller
             return back()->with('success', $pesan);
         } catch (\Exception $e) {
             DB::rollBack();
-<<<<<<< Updated upstream
-            Log::error("Error Validasi Wadek 3: " . $e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
-=======
             $incidentId = app(IncidentReporter::class)->report($e, $request, 'proposal_validation');
 
             return back()->with('error', app(IncidentReporter::class)->message($incidentId));
->>>>>>> Stashed changes
         }
     }
 

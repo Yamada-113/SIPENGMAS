@@ -2,24 +2,24 @@
 
 namespace App\Http\Requests\Auth;
 
-use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use App\Services\SecurityAuditLogger;
 use Illuminate\Validation\ValidationException;
-<<<<<<< Updated upstream
-use App\Models\User;
-use Illuminate\Support\Facades\Log;
-=======
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Throwable;
->>>>>>> Stashed changes
 
 class LoginRequest extends FormRequest
 {
+    private const MAX_ATTEMPTS = 5;
+
+    private const DECAY_SECONDS = 600;
+
+    private const INVALID_CREDENTIALS_MESSAGE = 'Username atau password salah';
+
     public function authorize(): bool
     {
         return true;
@@ -44,25 +44,34 @@ class LoginRequest extends FormRequest
      * @throws \Illuminate\Validation\ValidationException
      */
     public function authenticate(): void
-        {
-            $username = $this->input('username');
-            $user = User::where('username', $username)->first();
+    {
+        $username = $this->input('username');
+        $password = $this->input('password');
+        $throttleKey = $this->throttleKey();
+        $lockoutKey = 'login-lockout:' . $throttleKey;
 
-            if (
-                $user &&
-                $user->locked_until &&
-                now()->lt($user->locked_until)
-            ) {
+        if (
+            RateLimiter::tooManyAttempts($lockoutKey, 1) ||
+            RateLimiter::tooManyAttempts($throttleKey, self::MAX_ATTEMPTS)
+        ) {
+            throw new TooManyRequestsHttpException(
+                max(
+                    RateLimiter::availableIn($lockoutKey),
+                    RateLimiter::availableIn($throttleKey)
+                ),
+                'Terlalu banyak percobaan login. Akun dikunci selama 10 menit.'
+            );
+        }
 
-                $remainingMinutes = ceil(
-                    now()->diffInSeconds($user->locked_until) / 60
-                );
+        $credentials = [
+            'cn' => $username,
+            'password' => $password,
+            'fallback' => [
+                'username' => $username,
+                'password' => $password,
+            ],
+        ];
 
-<<<<<<< Updated upstream
-                throw ValidationException::withMessages([
-                    'username' => "Akun terkunci. Coba lagi dalam {$remainingMinutes} menit.",
-                ]);
-=======
         try {
             $authenticated = Auth::attempt($credentials, $this->boolean('remember'));
         } catch (Throwable $exception) {
@@ -89,70 +98,21 @@ class LoginRequest extends FormRequest
 
             if (RateLimiter::attempts($throttleKey) >= self::MAX_ATTEMPTS) {
                 RateLimiter::hit($lockoutKey, self::DECAY_SECONDS);
->>>>>>> Stashed changes
             }
 
-            $credentials = [
-                'cn' => $username,
-                'password' => $this->input('password'),
-                'fallback' => [
-                    'username' => $username,
-                    'password' => $this->input('password'),
-                ]
-            ];
+            throw ValidationException::withMessages([
+                'username' => self::INVALID_CREDENTIALS_MESSAGE,
+            ]);
+        }
 
-            if (! Auth::attempt($credentials, $this->boolean('remember'))) {
-                if ($user) {
+        RateLimiter::clear($throttleKey);
+        RateLimiter::clear($lockoutKey);
 
-<<<<<<< Updated upstream
-                    $user->increment('failed_login_attempts');
-
-                    Log::warning('Failed login', [
-                        'username' => $username,
-                        'attempts' => $user->failed_login_attempts,
-                        'ip' => $this->ip(),
-                    ]);
-
-                if ($user->failed_login_attempts >= 5) {
-
-                    $user->update([
-                        'locked_until' => now()->addMinutes(10),
-                    ]);
-                    Log::critical('Account locked after 5 failed attempts', [
-                        'username' => $username,
-                        'ip' => $this->ip(),
-                    ]);
-                    throw ValidationException::withMessages([
-                        'username' => 'Akun terkunci selama 10 menit karena 5 kali gagal login.',
-                    ]);
-                }
-
-                }
-
-        throw ValidationException::withMessages([
-            'username' => 'Username atau Password salah. Silakan coba lagi.',
-        ]);
-=======
         app(SecurityAuditLogger::class)->record($this, 'login', 'success', $username);
->>>>>>> Stashed changes
     }
-
-    // reset kalau login berhasil
-    if ($user) {
-        $user->update([
-            'failed_login_attempts' => 0,
-            'locked_until' => null,
-        ]);
-    }
-
-    Log::info('Login success', [
-        'username' => $username,
-        'ip' => $this->ip(),
-    ]);
-}
 
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('username')) . '|' . $this->ip());
+        return hash('sha256', Str::transliterate(Str::lower($this->string('username')) . '|' . $this->ip()));
     }
 }

@@ -1,7 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
-=======
 use App\Http\Middleware\EnforceAbsoluteSessionLifetime;
 use App\Http\Middleware\RecordForbiddenAccess;
 use App\Services\IncidentReporter;
@@ -9,7 +7,6 @@ use App\Services\SecurityAuditLogger;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
->>>>>>> Stashed changes
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -26,14 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-<<<<<<< Updated upstream
-        //
-=======
         $middleware->alias([
             'session.absolute' => EnforceAbsoluteSessionLifetime::class,
         ]);
         $middleware->append(RecordForbiddenAccess::class);
->>>>>>> Stashed changes
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $statusCode = function (Throwable $exception): int {

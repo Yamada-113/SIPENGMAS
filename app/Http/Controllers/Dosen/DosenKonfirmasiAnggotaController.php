@@ -92,13 +92,9 @@ class DosenKonfirmasiAnggotaController extends Controller
 
             return back()->with('success', 'Berhasil bergabung dengan proposal.');
         } catch (Exception $e) {
-<<<<<<< Updated upstream
-            return back()->with('error', $e->getMessage());
-=======
             $incidentId = app(IncidentReporter::class)->report($e, request(), 'proposal_invitation_acceptance');
 
             return back()->with('error', app(IncidentReporter::class)->message($incidentId));
->>>>>>> Stashed changes
         }
     }
 
@@ -115,13 +111,9 @@ class DosenKonfirmasiAnggotaController extends Controller
             });
             return back()->with('success', 'Undangan ditolak. Proposal dibatalkan.');
         } catch (Exception $e) {
-<<<<<<< Updated upstream
-            return back()->with('error', $e->getMessage());
-=======
             $incidentId = app(IncidentReporter::class)->report($e, request(), 'proposal_invitation_rejection');
 
             return back()->with('error', app(IncidentReporter::class)->message($incidentId));
->>>>>>> Stashed changes
         }
     }
 }

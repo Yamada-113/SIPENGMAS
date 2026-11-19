@@ -33,13 +33,9 @@ class DosenLampiranProposalController extends Controller
                 return redirect()->back()->with('success', ucfirst($request->kategori) . ' berhasil disimpan!');
             }
         } catch (\Exception $e) {
-<<<<<<< Updated upstream
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-=======
             $incidentId = app(IncidentReporter::class)->report($e, $request, 'proposal_attachment_upload');
 
             return redirect()->back()->with('error', app(IncidentReporter::class)->message($incidentId));
->>>>>>> Stashed changes
         }
         return redirect()->back()->with('error', 'Gagal mengunggah file.');
     }

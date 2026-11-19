@@ -3,62 +3,81 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-<<<<<<< Updated upstream
-=======
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Testing\TestResponse;
 use Mockery;
->>>>>>> Stashed changes
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config(['session.driver' => 'database']);
+    }
+
     public function test_login_screen_can_be_rendered(): void
     {
-        $response = $this->get('/login');
-
-        $response->assertStatus(200);
+        $this->get('/login')->assertOk();
     }
 
-    public function test_users_can_authenticate_using_the_login_screen(): void
+    public function test_ldap_login_regenerates_session_and_does_not_store_credentials(): void
     {
-        $user = User::factory()->create();
+        $user = $this->makeLdapUser();
+        $password = 'ldap-test-password';
+        $cookieName = config('session.cookie');
+        $initialCookie = $this->get('/login')->getCookie($cookieName)->getValue();
+        $this->mockLdapProvider($user, $password);
 
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
+        $response = $this->withCookie($cookieName, $initialCookie)->post('/login', [
+            'username' => $user->username,
+            'password' => $password,
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('dosen.dashboard'));
+        $sessionCookie = $response->getCookie($cookieName, false);
+        $newSessionId = $response->getCookie($cookieName)->getValue();
+        $this->assertNotSame($initialCookie, $newSessionId);
+        $this->assertTrue($sessionCookie->isHttpOnly());
+        $this->assertSame('lax', $sessionCookie->getSameSite());
+        $this->assertAuthenticatedAs($user);
+
+        $sessionData = $this->app['session.store']->all();
+        $this->assertSame(now()->timestamp, $sessionData['auth']['login_at']);
+        $this->assertStringNotContainsString($password, serialize($sessionData));
+        $this->assertStringNotContainsString($user->username, serialize($sessionData));
+        $this->assertStringNotContainsString($user->name, serialize($sessionData));
+        $this->assertStringNotContainsString($user->role, serialize($sessionData));
     }
 
-    public function test_users_can_not_authenticate_with_invalid_password(): void
+    public function test_invalid_ldap_credentials_do_not_authenticate(): void
     {
-        $user = User::factory()->create();
+        $this->mockLdapProvider(null);
 
         $this->post('/login', [
-            'email' => $user->email,
+            'username' => 'npm-123',
             'password' => 'wrong-password',
-        ]);
+        ])->assertSessionHasErrors('username');
 
         $this->assertGuest();
     }
 
-    public function test_users_can_logout(): void
+    public function test_script_tag_in_user_name_is_rendered_as_text(): void
     {
-        $user = User::factory()->create();
+        $user = User::create([
+            'name' => '<script>alert(1)</script>',
+            'username' => 'ldap-test-user',
+            'role' => 'Dosen',
+        ]);
 
-        $response = $this->actingAs($user)->post('/logout');
+        $response = $this->actingAs($user)->get('/profile');
 
-<<<<<<< Updated upstream
-        $this->assertGuest();
-        $response->assertRedirect('/');
-=======
         $response
             ->assertOk()
             ->assertSee('value="&lt;script&gt;alert(1)&lt;/script&gt;"', false)
@@ -158,6 +177,5 @@ class AuthenticationTest extends TestCase
         }
 
         Auth::guard('web')->setProvider($ldapProvider);
->>>>>>> Stashed changes
     }
 }

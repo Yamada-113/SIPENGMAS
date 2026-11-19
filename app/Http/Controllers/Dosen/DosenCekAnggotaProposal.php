@@ -12,7 +12,14 @@ class DosenCekAnggotaProposal extends Controller
 {
     public function checkId(Request $request)
     {
-        $id = trim($request->query('id'));
+        $validated = $request->validate([
+            'id' => ['required', 'string', 'regex:/^[0-9]{1,20}$/'],
+        ], [
+            'id.required' => 'NPM wajib diisi.',
+            'id.regex' => 'NPM hanya boleh berisi angka dan maksimal 20 digit.',
+        ]);
+        $id = $validated['id'];
+
         try {
             $connection = Container::getConnection('default');
             $user = $connection->query()
@@ -27,16 +34,7 @@ class DosenCekAnggotaProposal extends Controller
             }
             return response()->json(['success' => false, 'message' => 'Data tidak ditemukan']);
         } catch (\Exception $e) {
-<<<<<<< Updated upstream
-            Log::error("Detail Error LDAP: " . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-            ], 500);
-=======
             throw new ServiceUnavailableHttpException(0, 'LDAP lookup unavailable', $e);
->>>>>>> Stashed changes
         }
     }
 }
