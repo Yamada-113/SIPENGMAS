@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Dosen;
 
 use App\Http\Controllers\Controller;
+use App\Services\IncidentReporter;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use LdapRecord\Container;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 class DosenCekAnggotaProposal extends Controller
 {
@@ -26,12 +27,16 @@ class DosenCekAnggotaProposal extends Controller
             }
             return response()->json(['success' => false, 'message' => 'Data tidak ditemukan']);
         } catch (\Exception $e) {
+<<<<<<< Updated upstream
             Log::error("Detail Error LDAP: " . $e->getMessage());
 
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
+=======
+            throw new ServiceUnavailableHttpException(0, 'LDAP lookup unavailable', $e);
+>>>>>>> Stashed changes
         }
     }
 }

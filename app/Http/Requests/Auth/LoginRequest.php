@@ -7,9 +7,16 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use App\Services\SecurityAuditLogger;
 use Illuminate\Validation\ValidationException;
+<<<<<<< Updated upstream
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+=======
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Throwable;
+>>>>>>> Stashed changes
 
 class LoginRequest extends FormRequest
 {
@@ -51,9 +58,38 @@ class LoginRequest extends FormRequest
                     now()->diffInSeconds($user->locked_until) / 60
                 );
 
+<<<<<<< Updated upstream
                 throw ValidationException::withMessages([
                     'username' => "Akun terkunci. Coba lagi dalam {$remainingMinutes} menit.",
                 ]);
+=======
+        try {
+            $authenticated = Auth::attempt($credentials, $this->boolean('remember'));
+        } catch (Throwable $exception) {
+            app(SecurityAuditLogger::class)->record(
+                $this,
+                'login',
+                'backend_error',
+                $username,
+            );
+
+            throw new ServiceUnavailableHttpException(0, 'Authentication service unavailable', $exception);
+        }
+
+        if (! $authenticated) {
+            RateLimiter::hit($throttleKey, self::DECAY_SECONDS);
+
+            app(SecurityAuditLogger::class)->record(
+                $this,
+                'login',
+                'failure',
+                $username,
+                ['attempt' => RateLimiter::attempts($throttleKey)],
+            );
+
+            if (RateLimiter::attempts($throttleKey) >= self::MAX_ATTEMPTS) {
+                RateLimiter::hit($lockoutKey, self::DECAY_SECONDS);
+>>>>>>> Stashed changes
             }
 
             $credentials = [
@@ -68,6 +104,7 @@ class LoginRequest extends FormRequest
             if (! Auth::attempt($credentials, $this->boolean('remember'))) {
                 if ($user) {
 
+<<<<<<< Updated upstream
                     $user->increment('failed_login_attempts');
 
                     Log::warning('Failed login', [
@@ -95,6 +132,9 @@ class LoginRequest extends FormRequest
         throw ValidationException::withMessages([
             'username' => 'Username atau Password salah. Silakan coba lagi.',
         ]);
+=======
+        app(SecurityAuditLogger::class)->record($this, 'login', 'success', $username);
+>>>>>>> Stashed changes
     }
 
     // reset kalau login berhasil

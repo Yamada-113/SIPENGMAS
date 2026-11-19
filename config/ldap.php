@@ -51,7 +51,11 @@ return [
     */
 
     'logging' => [
+<<<<<<< Updated upstream
         'enabled' => env('LDAP_LOGGING', true),
+=======
+        'enabled' => false,
+>>>>>>> Stashed changes
         'channel' => env('LOG_CHANNEL', 'stack'),
         'level' => env('LOG_LEVEL', 'info'),
     ],

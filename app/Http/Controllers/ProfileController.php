@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Services\IncidentReporter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
@@ -168,7 +169,17 @@ class ProfileController extends Controller
                 return response()->json(['success' => true, 'message' => 'Tanda tangan berhasil disimpan.']);
             }
         } catch (\Exception $e) {
+<<<<<<< Updated upstream
             return response()->json(['success' => false, 'message' => 'Terjadi kesalahan server: ' . $e->getMessage()], 500);
+=======
+            $incidentId = app(IncidentReporter::class)->report($e, $request, 'signature_upload');
+
+            return response()->json([
+                'success' => false,
+                'message' => app(IncidentReporter::class)->message($incidentId),
+                'incident_id' => $incidentId,
+            ], 500);
+>>>>>>> Stashed changes
         }
 
         return response()->json(['success' => false, 'message' => 'File tidak ditemukan.'], 400);

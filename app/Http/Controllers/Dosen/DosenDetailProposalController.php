@@ -33,7 +33,7 @@ class DosenDetailProposalController extends Controller
 
         if (!$isKetua && !$isAnggota) {
             return redirect()->route('dosen.dashboard')
-            ->with('error', 'Anda tidak memiliki akses ke proposal ini.');
+                ->with('error', 'Anda tidak memiliki akses ke proposal ini.');
         }
         // if (!$detailProposal) {
         //     return redirect()->back()->with('error', 'Proposal tidak ditemukan.');
@@ -84,7 +84,7 @@ class DosenDetailProposalController extends Controller
 
         if (!$isKetua && !$isAnggota) {
             return redirect()->route('dosen.dashboard')
-            ->with('error', 'Anda tidak memiliki akses ke proposal ini.');
+                ->with('error', 'Anda tidak memiliki akses ke proposal ini.');
         }
         $ketua = (object) [
             'nama' => $detailProposal->user->name ?? '-',

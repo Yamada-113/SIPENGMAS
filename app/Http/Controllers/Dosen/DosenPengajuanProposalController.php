@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Dosen;
 
 use App\Http\Controllers\Controller;
+use App\Services\IncidentReporter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Exception;
 use App\Models\Fakultas;
 use App\Models\Proposal;
@@ -137,14 +137,19 @@ class DosenPengajuanProposalController extends Controller
             try {
                 NotificationFlowService::sendInvitation($listAnggotaBerhasilDisimpan, $proposal);
             } catch (Exception $notifError) {
-                Log::error("Gagal kirim notifikasi: " . $notifError->getMessage());
+                app(IncidentReporter::class)->report($notifError, $request, 'proposal_invitation_notification');
             }
 
             return redirect()->route('dosen.dashboard')->with('success', 'Proposal berhasil disimpan! Undangan telah dikirim ke anggota.');
         } catch (Exception $e) {
             DB::rollBack();
+<<<<<<< Updated upstream
             Log::error("Gagal simpan proposal: " . $e->getMessage());
             return back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+=======
+            $incidentId = app(IncidentReporter::class)->report($e, $request, 'proposal_submission');
+            return back()->withInput()->with('error', app(IncidentReporter::class)->message($incidentId));
+>>>>>>> Stashed changes
         }
     }
 }
