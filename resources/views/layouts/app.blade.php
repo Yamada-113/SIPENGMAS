@@ -274,25 +274,54 @@
                         const noMsg = document.getElementById('no-notif-msg');
                         if (noMsg) noMsg.style.display = 'none';
 
-                        const newHtml = `
-                            <li class="bg-light">
-                                <a href="${notification.url}?read_id=${notification.id}" class="dropdown-item d-flex align-items-start gap-2 py-2">
-                                    <div class="bg-success bg-opacity-10 p-2 rounded-circle">
-                                        <i class="bi bi-bell-fill text-success"></i>
-                                    </div>
-                                    <div style="white-space: normal;">
-                                        <small class="fw-bold d-block">${notification.title}</small>
-                                        <small class="text-dark" style="font-size: 0.75rem;">${notification.message}</small>
-                                        <small class="text-primary d-block mt-1 fw-bold" style="font-size: 0.65rem;">Baru Saja</small>
-                                    </div>
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                        `;
+                        if (!notification.url) {
+                            console.error('Received a notification without a destination URL.');
+                            return;
+                        }
+                        const notificationUrl = new URL(notification.url, window.location.origin);
+                        if (notificationUrl.origin !== window.location.origin) {
+                            console.error('Received a notification with an external destination URL.');
+                            return;
+                        }
+                        notificationUrl.searchParams.set('read_id', notification.id);
+
+                        const notificationItem = document.createElement('li');
+                        notificationItem.className = 'bg-light';
+                        const link = document.createElement('a');
+                        link.href = notificationUrl.href;
+                        link.className = 'dropdown-item d-flex align-items-start gap-2 py-2';
+                        const iconContainer = document.createElement('div');
+                        iconContainer.className = 'bg-success bg-opacity-10 p-2 rounded-circle';
+                        const icon = document.createElement('i');
+                        icon.className = 'bi bi-bell-fill text-success';
+                        iconContainer.appendChild(icon);
+                        const notificationContent = document.createElement('div');
+                        notificationContent.style.whiteSpace = 'normal';
+                        const title = document.createElement('small');
+                        title.className = 'fw-bold d-block';
+                        title.textContent = notification.title || '';
+                        const message = document.createElement('small');
+                        message.className = 'text-dark';
+                        message.style.fontSize = '0.75rem';
+                        message.textContent = notification.message || '';
+                        const time = document.createElement('small');
+                        time.className = 'text-primary d-block mt-1 fw-bold';
+                        time.style.fontSize = '0.65rem';
+                        time.textContent = 'Baru Saja';
+                        notificationContent.append(title, message, time);
+                        link.append(iconContainer, notificationContent);
+                        notificationItem.appendChild(link);
+                        const divider = document.createElement('li');
+                        const dividerRule = document.createElement('hr');
+                        dividerRule.className = 'dropdown-divider';
+                        divider.appendChild(dividerRule);
 
                         if (notifList) {
                             const header = notifList.querySelector('.dropdown-header');
-                            if (header) header.insertAdjacentHTML('afterend', newHtml);
+                            if (header) {
+                                header.insertAdjacentElement('afterend', notificationItem);
+                                notificationItem.insertAdjacentElement('afterend', divider);
+                            }
                         }
 
                         showRealtimeToast(notification.title, notification.message);
@@ -308,16 +337,24 @@
             alertDiv.className = `alert alert-info shadow-lg alert-dismissible fade show border-0`;
             alertDiv.style.backgroundColor = "#e3f2fd";
             alertDiv.style.borderLeft = "5px solid #2196f3";
-            alertDiv.innerHTML = `
-                <div class="d-flex align-items-start gap-2">
-                    <i class="bi bi-bell-fill mt-1 text-primary"></i>
-                    <div>
-                        <strong class="text-primary">${title}</strong><br>
-                        <small class="text-dark">${message}</small>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
+            const content = document.createElement('div');
+            content.className = 'd-flex align-items-start gap-2';
+            const icon = document.createElement('i');
+            icon.className = 'bi bi-bell-fill mt-1 text-primary';
+            const textContainer = document.createElement('div');
+            const titleElement = document.createElement('strong');
+            titleElement.className = 'text-primary';
+            titleElement.textContent = title;
+            const messageElement = document.createElement('small');
+            messageElement.className = 'text-dark';
+            messageElement.textContent = message;
+            const closeButton = document.createElement('button');
+            closeButton.type = 'button';
+            closeButton.className = 'btn-close';
+            closeButton.setAttribute('data-bs-dismiss', 'alert');
+            textContainer.append(titleElement, document.createElement('br'), messageElement);
+            content.append(icon, textContainer, closeButton);
+            alertDiv.appendChild(content);
             container.appendChild(alertDiv);
 
             setTimeout(() => {
@@ -333,18 +370,25 @@
                 const container = document.getElementById('floating-alert-container');
                 if (!container) return;
 
+                const message = @json(session('error'));
                 const alertDiv = document.createElement('div');
                 alertDiv.className = 'alert alert-danger shadow-lg alert-dismissible fade show border-0';
-                alertDiv.innerHTML = `
-                    <div class="d-flex align-items-start gap-2">
-                        <i class="bi bi-shield-exclamation mt-1"></i>
-                        <div>
-                            <strong>Akses Ditolak</strong><br>
-                            <small>{{ session('error') }}</small>
-                        </div>
-                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
-                    </div>
-                `;
+                const content = document.createElement('div');
+                content.className = 'd-flex align-items-start gap-2';
+                const icon = document.createElement('i');
+                icon.className = 'bi bi-shield-exclamation mt-1';
+                const textContainer = document.createElement('div');
+                const title = document.createElement('strong');
+                title.textContent = 'Akses Ditolak';
+                const messageElement = document.createElement('small');
+                messageElement.textContent = message;
+                const closeButton = document.createElement('button');
+                closeButton.type = 'button';
+                closeButton.className = 'btn-close ms-auto';
+                closeButton.setAttribute('data-bs-dismiss', 'alert');
+                textContainer.append(title, document.createElement('br'), messageElement);
+                content.append(icon, textContainer, closeButton);
+                alertDiv.appendChild(content);
                 container.appendChild(alertDiv);
 
                 setTimeout(() => {

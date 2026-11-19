@@ -69,8 +69,9 @@ class WakilDekan3ValidasiController extends Controller
             return back()->with('success', $pesan);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Error Validasi Wadek 3: " . $e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            Log::error('Proposal validation by vice dean failed', ['exception' => $e]);
+
+            return back()->with('error', 'Validasi proposal gagal. Silakan coba lagi.');
         }
     }
 

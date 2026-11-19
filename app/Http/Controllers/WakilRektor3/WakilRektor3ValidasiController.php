@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Proposal;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Services\NotificationFlowService;
 
 class WakilRektor3ValidasiController extends Controller
@@ -66,7 +67,9 @@ class WakilRektor3ValidasiController extends Controller
             $pesan = $request->keputusan == 'terima' ? 'Proposal berhasil disetujui dan didanai.' : 'Proposal telah ditolak.';
             return redirect()->route('wakil_rektor.validasi')->with('success', $pesan);
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            Log::error('Proposal validation by vice rector failed', ['exception' => $e]);
+
+            return back()->with('error', 'Validasi proposal gagal. Silakan coba lagi.');
         }
     }
 }

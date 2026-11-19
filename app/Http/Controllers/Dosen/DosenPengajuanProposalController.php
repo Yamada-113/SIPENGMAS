@@ -47,7 +47,7 @@ class DosenPengajuanProposalController extends Controller
             'anggota_dosen.*.fakultas_dosen' => 'required|string|max:100',
             'anggota_dosen.*.peran' => 'required|string|max:50',
             'anggota_mhs' => 'required|array|min:1',
-            'anggota_mhs.*.npm' => 'required|string|max:20',
+            'anggota_mhs.*.npm' => ['required', 'string', 'regex:/^[0-9]{1,20}$/'],
             'anggota_mhs.*.nama' => 'required|string|max:100',
             'anggota_mhs.*.prodi' => 'required|string|max:100',
             'anggota_mhs.*.peran' => 'required|string|max:50',
@@ -63,6 +63,8 @@ class DosenPengajuanProposalController extends Controller
             'jabatan_menyetujui' => 'required|string|max:50',
             'nama_menyetujui' => 'required|string|max:100',
             'nip_menyetujui' => 'required|string|max:20',
+        ], [
+            'anggota_mhs.*.npm.regex' => 'NPM mahasiswa hanya boleh berisi angka dan maksimal 20 digit.',
         ]);
 
         try {
@@ -143,8 +145,8 @@ class DosenPengajuanProposalController extends Controller
             return redirect()->route('dosen.dashboard')->with('success', 'Proposal berhasil disimpan! Undangan telah dikirim ke anggota.');
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error("Gagal simpan proposal: " . $e->getMessage());
-            return back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            Log::error('Proposal submission failed', ['exception' => $e]);
+            return back()->withInput()->with('error', 'Proposal gagal disimpan. Silakan coba lagi atau hubungi administrator.');
         }
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Proposal;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\Skema;
 
 class KepalaPusatValidasiController extends Controller
@@ -109,7 +110,9 @@ class KepalaPusatValidasiController extends Controller
             $pesan = $request->keputusan == 'terima' ? 'Proposal berhasil disetujui.' : 'Proposal telah ditolak.';
             return redirect()->route('kepala_pusat.validasi')->with('success', $pesan);
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            Log::error('Proposal validation by center head failed', ['exception' => $e]);
+
+            return back()->with('error', 'Validasi proposal gagal. Silakan coba lagi.');
         }
     }
 }

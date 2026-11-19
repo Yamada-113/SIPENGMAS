@@ -10,16 +10,22 @@
             document.addEventListener('DOMContentLoaded', function() {
                 const container = document.getElementById('floating-alert-container');
                 if (container) {
+                    const message = @json(session('success'));
                     const alertDiv = document.createElement('div');
                     alertDiv.className = `alert alert-success shadow-lg alert-dismissible fade show`;
                     alertDiv.role = 'alert';
-                    alertDiv.innerHTML = `
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-check-circle-fill me-2 fs-5"></i>
-                        <div>{{ session('success') }}</div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    `;
+                    const content = document.createElement('div');
+                    content.className = 'd-flex align-items-center';
+                    const icon = document.createElement('i');
+                    icon.className = 'bi bi-check-circle-fill me-2 fs-5';
+                    const messageElement = document.createElement('div');
+                    messageElement.textContent = message;
+                    const closeButton = document.createElement('button');
+                    closeButton.type = 'button';
+                    closeButton.className = 'btn-close';
+                    closeButton.setAttribute('data-bs-dismiss', 'alert');
+                    content.append(icon, messageElement, closeButton);
+                    alertDiv.appendChild(content);
                     container.appendChild(alertDiv);
                     setTimeout(() => {
                         alertDiv.classList.remove('show');

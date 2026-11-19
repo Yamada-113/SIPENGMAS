@@ -3,7 +3,7 @@
     <script>
         @if ($errors->has('username'))
             document.addEventListener('DOMContentLoaded', function() {
-                const message = "{{ $errors->first('username') }}";
+                const message = @json($errors->first('username'));
                 const isLocked = message.toLowerCase().includes('terkunci');
 
                 Swal.fire({

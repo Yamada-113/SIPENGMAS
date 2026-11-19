@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Exception;
 use App\Models\ProposalCoreAnggotaDosen;
 use App\Models\Proposal;
@@ -91,7 +92,9 @@ class DosenKonfirmasiAnggotaController extends Controller
 
             return back()->with('success', 'Berhasil bergabung dengan proposal.');
         } catch (Exception $e) {
-            return back()->with('error', $e->getMessage());
+            Log::error('Proposal invitation acceptance failed', ['exception' => $e]);
+
+            return back()->with('error', 'Undangan gagal diproses. Pastikan akses dan status proposal masih valid.');
         }
     }
 
@@ -108,7 +111,9 @@ class DosenKonfirmasiAnggotaController extends Controller
             });
             return back()->with('success', 'Undangan ditolak. Proposal dibatalkan.');
         } catch (Exception $e) {
-            return back()->with('error', $e->getMessage());
+            Log::error('Proposal invitation rejection failed', ['exception' => $e]);
+
+            return back()->with('error', 'Undangan gagal diproses. Silakan coba lagi.');
         }
     }
 }

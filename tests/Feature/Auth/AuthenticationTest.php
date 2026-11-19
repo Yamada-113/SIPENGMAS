@@ -67,6 +67,22 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_script_tag_in_user_name_is_rendered_as_text(): void
+    {
+        $user = User::create([
+            'name' => '<script>alert(1)</script>',
+            'username' => 'ldap-test-user',
+            'role' => 'Dosen',
+        ]);
+
+        $response = $this->actingAs($user)->get('/profile');
+
+        $response
+            ->assertOk()
+            ->assertSee('value="&lt;script&gt;alert(1)&lt;/script&gt;"', false)
+            ->assertDontSee('<script>alert(1)</script>', false);
+    }
+
     public function test_logout_expires_cookie_and_rejects_the_old_session_cookie(): void
     {
         $user = $this->makeLdapUser();

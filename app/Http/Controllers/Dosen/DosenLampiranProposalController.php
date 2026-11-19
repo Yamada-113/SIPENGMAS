@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dosen;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DosenLampiranProposalController extends Controller
 {
@@ -32,7 +33,9 @@ class DosenLampiranProposalController extends Controller
                 return redirect()->back()->with('success', ucfirst($request->kategori) . ' berhasil disimpan!');
             }
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            Log::error('Proposal attachment upload failed', ['exception' => $e]);
+
+            return redirect()->back()->with('error', 'Lampiran gagal diunggah. Silakan coba lagi.');
         }
         return redirect()->back()->with('error', 'Gagal mengunggah file.');
     }
