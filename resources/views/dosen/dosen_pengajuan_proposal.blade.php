@@ -76,7 +76,7 @@
         @if ($errors->any())
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    showFloatingAlert("Terdapat kolom yang belum diisi atau salah. Mohon periksa .", 'danger');
+                    showFloatingAlert("Terdapat kolom yang belum diisi atau salah. Mohon periksa kembali.", 'danger');
                 });
             </script>
         @endif
@@ -111,6 +111,33 @@
                             <label class="form-label fw-bold">Skema yang Dipilih</label>
                             <input type="text" class="form-control bg-light" value="{{ $namaSkema }}" disabled>
                             <input type="hidden" name="skema" value="{{ $skemaId }}">
+                        </div>
+
+                        {{-- TAMBAHAN: PILIHAN JENIS KEGIATAN (AMAN DARI ERROR) --}}
+                        <div class="col-md-12">
+                            <label for="jenis_kegiatan_id" class="form-label fw-bold">
+                                Jenis Kegiatan <span class="text-danger">*</span>
+                            </label>
+                            <select required class="form-select @error('jenis_kegiatan_id') is-invalid @enderror" 
+                                name="jenis_kegiatan_id" id="jenis_kegiatan_id">
+                                <option value="" selected disabled>-- Pilih Jenis Kegiatan --</option>
+                                
+                                @if(isset($jenisKegiatan) && count($jenisKegiatan) > 0)
+                                    @foreach ($jenisKegiatan as $jenis)
+                                        <option value="{{ $jenis->id }}" {{ old('jenis_kegiatan_id') == $jenis->id ? 'selected' : '' }}>
+                                            {{ $jenis->nama }}
+                                        </option>
+                                    @endforeach
+                                @else
+                                    {{-- Opsi cadangan sementara agar tidak error saat backend belum siap --}}
+                                    <option value="1">Penelitian Dosen Pemula (Dummy)</option>
+                                    <option value="2">Pengabdian Kepada Masyarakat (Dummy)</option>
+                                @endif
+                            </select>
+                            <div class="invalid-feedback">Jenis kegiatan wajib dipilih.</div>
+                            @error('jenis_kegiatan_id')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
