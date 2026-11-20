@@ -466,9 +466,217 @@
                 </div>
             </div>
 
+            {{-- TAMBAHAN: 5. RENCANA ANGGARAN BIAYA --}}
+            <div class="card shadow-sm mb-4" id="card-rab">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0 fw-bold">5. Rencana Anggaran Biaya</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="honor" class="form-label">Honor <span class="text-danger">*</span></label>
+                            <input type="text" required
+                                class="form-control input-rupiah rab-item @error('honor') is-invalid @enderror"
+                                name="honor" id="honor" placeholder="2.000.000" value="{{ old('honor') }}">
+                            <div class="invalid-feedback">Honor wajib diisi.</div>
+                            @error('honor')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="biaya_inovasi" class="form-label">Biaya Inovasi <span class="text-danger">*</span></label>
+                            <input type="text" required
+                                class="form-control input-rupiah rab-item @error('biaya_inovasi') is-invalid @enderror"
+                                name="biaya_inovasi" id="biaya_inovasi" placeholder="2.000.000" value="{{ old('biaya_inovasi') }}">
+                            <div class="invalid-feedback">Biaya inovasi wajib diisi.</div>
+                            @error('biaya_inovasi')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="perjalanan_transportasi" class="form-label">Perjalanan atau Transportasi <span class="text-danger">*</span></label>
+                            <input type="text" required
+                                class="form-control input-rupiah rab-item @error('perjalanan_transportasi') is-invalid @enderror"
+                                name="perjalanan_transportasi" id="perjalanan_transportasi" placeholder="2.000.000" value="{{ old('perjalanan_transportasi') }}">
+                            <div class="invalid-feedback">Biaya perjalanan atau transportasi wajib diisi.</div>
+                            @error('perjalanan_transportasi')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="luaran" class="form-label">Luaran <span class="text-danger">*</span></label>
+                            <input type="text" required
+                                class="form-control input-rupiah rab-item @error('luaran') is-invalid @enderror"
+                                name="luaran" id="luaran" placeholder="2.000.000" value="{{ old('luaran') }}">
+                            <div class="invalid-feedback">Biaya luaran wajib diisi.</div>
+                            @error('luaran')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <span class="fw-bold text-success fs-6">Total Anggaran (Rp)</span>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-md-end">
+                            <input type="text" class="form-control text-end fw-bold bg-light" style="max-width: 260px;"
+                                id="total_anggaran_display" name="total_anggaran" value="{{ old('total_anggaran', '0') }}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- TAMBAHAN: 6. PENGESAHAN --}}
+            <div class="card shadow-sm mb-4" id="card-pengesahan">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0 fw-bold">6. Pengesahan</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="kota_pengesahan" class="form-label">Kota <span class="text-danger">*</span></label>
+                        <input type="text" required
+                            class="form-control @error('kota_pengesahan') is-invalid @enderror"
+                            name="kota_pengesahan" id="kota_pengesahan" maxlength="20" placeholder="Jakarta"
+                            value="{{ old('kota_pengesahan') }}">
+                        <div class="d-flex justify-content-between">
+                            <div class="invalid-feedback">Kota wajib diisi.</div>
+                            <small id="kota_pengesahan-counter" class="form-text text-muted ms-auto">0/20</small>
+                        </div>
+                        @error('kota_pengesahan')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="row g-4 mt-1">
+                        {{-- PIHAK YANG MENGETAHUI --}}
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Pihak yang Mengetahui <span class="text-danger">*</span></h6>
+
+                            <div class="mb-3">
+                                <label for="mengetahui_nip" class="form-label">NIP</label>
+                                <input type="text"
+                                    class="form-control only-number @error('mengetahui_nip') is-invalid @enderror"
+                                    name="mengetahui_nip" id="mengetahui_nip" value="{{ old('mengetahui_nip') }}">
+                                @error('mengetahui_nip')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="mengetahui_nama" class="form-label">Nama Lengkap</label>
+                                <input type="text"
+                                    class="form-control @error('mengetahui_nama') is-invalid @enderror"
+                                    name="mengetahui_nama" id="mengetahui_nama" value="{{ old('mengetahui_nama') }}">
+                                @error('mengetahui_nama')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="mengetahui_jabatan" class="form-label">Jabatan</label>
+                                <input type="text"
+                                    class="form-control @error('mengetahui_jabatan') is-invalid @enderror"
+                                    name="mengetahui_jabatan" id="mengetahui_jabatan" value="{{ old('mengetahui_jabatan') }}">
+                                @error('mengetahui_jabatan')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- PIHAK YANG MENYETUJUI --}}
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Pihak yang Menyetujui <span class="text-danger">*</span></h6>
+
+                            <div class="mb-3">
+                                <label for="menyetujui_nip" class="form-label">NIP</label>
+                                <input type="text"
+                                    class="form-control only-number @error('menyetujui_nip') is-invalid @enderror"
+                                    name="menyetujui_nip" id="menyetujui_nip" value="{{ old('menyetujui_nip') }}">
+                                @error('menyetujui_nip')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="menyetujui_nama" class="form-label">Nama Lengkap</label>
+                                <input type="text"
+                                    class="form-control @error('menyetujui_nama') is-invalid @enderror"
+                                    name="menyetujui_nama" id="menyetujui_nama" value="{{ old('menyetujui_nama') }}">
+                                @error('menyetujui_nama')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="menyetujui_jabatan" class="form-label">Jabatan</label>
+                                <input type="text"
+                                    class="form-control @error('menyetujui_jabatan') is-invalid @enderror"
+                                    name="menyetujui_jabatan" id="menyetujui_jabatan" value="{{ old('menyetujui_jabatan') }}">
+                                @error('menyetujui_jabatan')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="d-grid gap-2 mb-5">
                 <button type="submit" class="btn btn-primary btn-lg fw-bold">Ajukan Proposal Sekarang</button>
             </div>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const rabInputs = document.querySelectorAll('.rab-item');
+            const totalDisplay = document.getElementById('total_anggaran_display');
+
+            function parseAngka(val) {
+                if (!val) return 0;
+                const bersih = val.toString().replace(/[^0-9]/g, '');
+                return parseInt(bersih, 10) || 0;
+            }
+
+            function formatRibuan(angka) {
+                return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
+
+            function hitungTotalRab() {
+                let total = 0;
+                rabInputs.forEach(input => {
+                    total += parseAngka(input.value);
+                });
+                if (totalDisplay) {
+                    totalDisplay.value = formatRibuan(total);
+                }
+            }
+
+            rabInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const angka = parseAngka(this.value);
+                    this.value = angka > 0 ? formatRibuan(angka) : '';
+                    hitungTotalRab();
+                });
+            });
+
+            hitungTotalRab();
+
+            const kotaInput = document.getElementById('kota_pengesahan');
+            const kotaCounter = document.getElementById('kota_pengesahan-counter');
+            if (kotaInput && kotaCounter) {
+                const updateKotaCounter = () => {
+                    kotaCounter.textContent = `${kotaInput.value.length}/20`;
+                };
+                kotaInput.addEventListener('input', updateKotaCounter);
+                updateKotaCounter();
+            }
+        });
+    </script>
 @endsection
