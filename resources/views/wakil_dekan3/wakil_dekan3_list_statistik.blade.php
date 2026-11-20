@@ -6,12 +6,7 @@
     <div class="container">
         {{-- 1. TOOLBAR --}}
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-            <div>
-                <a href="{{ route('wakil_dekan3.dashboard') }}" class="btn btn-secondary  shadow-sm">
-                    <i class="bi  me-1"></i> 
-                </a>
-            </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 ms-auto">
                 @include('shared.toolbar_filter')
             </div>
         </div>
