@@ -8,7 +8,6 @@ use App\Models\Skala;
 use App\Models\Prodi;
 use App\Models\Fakultas;
 
-
 class DosenPengajuanSkemaDanForm extends Controller
 {
     public function showSkema()
@@ -36,6 +35,8 @@ class DosenPengajuanSkemaDanForm extends Controller
         $skema = Skema::find($skemaId);
         $namaSkema = $skema ? $skema->nama : 'Skema Tidak Ditemukan / Non-Aktif';
         $prodis = Prodi::all();
+        $skalas = Skala::all();
+
         return view('dosen.dosen_pengajuan_proposal', [
             'skemaId' => $skemaId,
             'selectedYear' => $year,
@@ -43,6 +44,7 @@ class DosenPengajuanSkemaDanForm extends Controller
             'namaSkema' => $namaSkema,
             'prodis' => $prodis,
             'dataFakultas' => $dataFakultas,
+            'skalas' => $skalas,
         ]);
     }
 }

@@ -101,29 +101,29 @@
                 <img src="{{ asset('images/white_sipengmaswordCROP-removebg-preview.png') }}" alt="SIPENGMAS" style="height: 50px; width: auto;">
             </a>
 
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center d-flex flex-row">
-                <li class="nav-item dropdown me-3">
-                    <a class="nav-link position-relative" href="#" id="navbarDropdownNotif" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-bell-fill fs-5"></i>
+            @auth
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center d-flex flex-row">
+                    <li class="nav-item dropdown pe-3">
+                        <a class="nav-link position-relative px-2" href="#" id="navbarDropdownNotif" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell-fill fs-5"></i>
 
-                        @php
-                            $unreadCount = auth()->check() ? auth()->user()->unreadNotifications->count() : 0;
-                            $badgeShowClass = $unreadCount == 0 ? 'd-none' : '';
-                        @endphp
-                        <span id="notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ $badgeShowClass }}" style="font-size: 0.6rem;">
-                            {{ $unreadCount }}
-                        </span>
-                    </a>
+                            @php
+                                $unreadCount = auth()->user()->unreadNotifications->count();
+                                $badgeShowClass = $unreadCount == 0 ? 'd-none' : '';
+                            @endphp
+                            <span id="notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ $badgeShowClass }}" style="font-size: 0.6rem;">
+                                {{ $unreadCount }}
+                            </span>
+                        </a>
 
-                    <ul id="notification-list" class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="navbarDropdownNotif" style="width: 320px; max-height: 400px; overflow-y: auto;">
-                        <li class="dropdown-header fw-bold d-flex justify-content-between align-items-center bg-white sticky-top pt-2 pb-2 border-bottom">
-                            <span>Notifikasi</span>
-                            @if ($unreadCount > 0)
-                                <a href="{{ route('mark_all_read') }}" class="text-decoration-none small text-primary" style="font-size: 0.75rem;">Tandai semua</a>
-                            @endif
-                        </li>
+                        <ul id="notification-list" class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="navbarDropdownNotif" style="width: 320px; max-height: 400px; overflow-y: auto;">
+                            <li class="dropdown-header fw-bold d-flex justify-content-between align-items-center bg-white sticky-top pt-2 pb-2 border-bottom">
+                                <span>Notifikasi</span>
+                                @if ($unreadCount > 0)
+                                    <a href="{{ route('mark_all_read') }}" class="text-decoration-none small text-primary" style="font-size: 0.75rem;">Tandai semua</a>
+                                @endif
+                            </li>
 
-                        @if (auth()->check())
                             @forelse(auth()->user()->notifications->take(15) as $notification)
                                 @php
                                     $isUnread = is_null($notification->read_at);
@@ -170,33 +170,40 @@
                                     <small>Belum ada notifikasi</small>
                                 </li>
                             @endforelse
-                        @endif
-                    </ul>
-                </li>
+                        </ul>
+                    </li>
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill me-2" viewBox="0 0 16 16">
-                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-                        </svg>
-                        <span class="user-name">
-                            {{ Auth::user()->name ?? 'User' }}
-                        </span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">
-                                    Keluar
-                                </a>
-                            </form>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+                    <li class="nav-item border-start border-white border-opacity-50 px-3">
+                        <a class="nav-link d-flex align-items-center py-0 {{ request()->routeIs('profile.*') ? 'active text-decoration-underline' : '' }}" href="{{ route('profile.edit') }}">
+                            <i class="bi bi-person-vcard me-2"></i>
+                            <span>My Page</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item dropdown border-start border-white border-opacity-50 ps-3">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center py-0" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill me-2" viewBox="0 0 16 16">
+                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                            </svg>
+                            <span class="user-name">
+                                {{ Auth::user()->name ?? 'User' }}
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">
+                                        Keluar
+                                    </a>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            @endauth
         </div>
     </nav>
 
