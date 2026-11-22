@@ -123,12 +123,7 @@
                                         </option>
                                     @endforeach
                                 @else
-<<<<<<< HEAD
                                     <option value="" disabled>Tidak ada jenis kegiatan aktif</option>
-=======
-                                    <option value="1" {{ old('jenis_kegiatan_id') == 1 ? 'selected' : '' }}>Penelitian Dosen Pemula (Dummy)</option>
-                                    <option value="2" {{ old('jenis_kegiatan_id') == 2 ? 'selected' : '' }}>Pengabdian Kepada Masyarakat (Dummy)</option>
->>>>>>> 96fe69109c0f4a20f98ae86ffd978a420c63c960
                                 @endif
                             </select>
                             <div class="invalid-feedback">
