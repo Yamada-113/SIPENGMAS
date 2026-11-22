@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             SkalaSkemaSeeder::class,
             ProdiSeeder::class,
             ProfileAttributesSeeder::class,
+            JenisKegiatanSeeder::class,
         ]);
     }
 }

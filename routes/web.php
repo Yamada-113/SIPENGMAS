@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\File;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\DashboardRedirectController;
+use App\Http\Controllers\Admin\JenisKegiatanController;
+use App\Http\Controllers\Api\JenisKegiatanController as ApiJenisKegiatanController;
 
 // --- ADMIN ---
 use App\Http\Controllers\Admin\AdminDashboardController;
@@ -71,6 +74,9 @@ Route::get('/', function () {
 // =========================================================================
 Route::middleware('auth')->group(function () {
 
+    Route::get('/dashboard', DashboardRedirectController::class)
+        ->name('dashboard');
+
     // --- UTILITY & PROFILE ---
     Route::get('/mark-all-read', [NotificationController::class, 'markAllRead'])->name('mark_all_read');
     Route::get('/notification/read/{id}', [NotificationController::class, 'readAndRedirect'])->name('notification.read');
@@ -85,6 +91,8 @@ Route::middleware('auth')->group(function () {
 
     // --- API CHECKER ---
     Route::get('/api/ldap-check', [DosenCekAnggotaProposal::class, 'checkId'])->name('api.ldap_check');
+    Route::get('/api/jenis-kegiatan', [ApiJenisKegiatanController::class, 'index'])
+        ->name('api.jenis_kegiatan');
 
     // =====================================================================
     // SHARED ACTIONS (Digunakan oleh Admin/Wadek/Kapus/Warek untuk Approval)
@@ -118,7 +126,9 @@ Route::middleware('auth')->group(function () {
     // 1. ADMIN SECTION
     // =====================================================================
     Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+            ->middleware('role:Admin')
+            ->name('dashboard');
         
         // Detail Proposal (View Only / Rekap)
         Route::get('/rekapitulasi/detail/{id}', [AdminDetailProposalController::class, 'show'])->name('rekapitulasi.detail');
@@ -131,19 +141,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/customization/general', [AdminCustomizationController::class, 'update'])->name('customization.update');
         
         // 2. Skema & Skala Settings (UPDATE BAGIAN INI)
-        Route::get('/customization/skema', [AdminCustomizationController::class, 'skema'])->name('customization.skema');
-        Route::put('/customization/skala/{id}', [AdminCustomizationController::class, 'updateSkala'])->name('customization.skala.update');
-        Route::delete('/customization/skala/{id}', [AdminCustomizationController::class, 'destroySkala'])->name('customization.skala.delete');
-        
-        // Route untuk Tambah SKALA (Kategori) - INI YANG HILANG
-        Route::post('/customization/skala', [AdminCustomizationController::class, 'storeSkala'])->name('customization.skala.store'); 
-
-        // Route untuk Tambah SKEMA (Item)
-        Route::post('/customization/skema', [AdminCustomizationController::class, 'storeSkema'])->name('customization.skema.store');
-        
-        // Route Hapus
-        Route::delete('/customization/skema/{id}', [AdminCustomizationController::class, 'destroySkema'])->name('customization.skema.delete');
-        Route::put('/customization/skema/{id}', [AdminCustomizationController::class, 'updateSkema'])->name('customization.skema.update');
+        Route::middleware('role:Admin')->group(function () {
+            Route::get('/customization/skema', [AdminCustomizationController::class, 'skema'])->name('customization.skema');
+            Route::post('/customization/skala', [AdminCustomizationController::class, 'storeSkala'])->name('customization.skala.store');
+            Route::put('/customization/skala/{id}', [AdminCustomizationController::class, 'updateSkala'])->name('customization.skala.update');
+            Route::delete('/customization/skala/{id}', [AdminCustomizationController::class, 'destroySkala'])->name('customization.skala.delete');
+            Route::post('/customization/skema', [AdminCustomizationController::class, 'storeSkema'])->name('customization.skema.store');
+            Route::put('/customization/skema/{id}', [AdminCustomizationController::class, 'updateSkema'])->name('customization.skema.update');
+            Route::delete('/customization/skema/{id}', [AdminCustomizationController::class, 'destroySkema'])->name('customization.skema.delete');
+        });
 
         // ROUTE Custom PRODI
         Route::get('/customization/prodi', [AdminCustomizationController::class, 'prodi'])->name('customization.prodi');
@@ -153,6 +159,16 @@ Route::middleware('auth')->group(function () {
 
         // Customization Profile Attributes (Fakultas & Jabatan)
         Route::get('/customization/profile', [AdminCustomizationController::class, 'profileAttributes'])->name('customization.profile');
+
+        // Data Master Jenis Kegiatan
+        Route::middleware('role:Admin')->group(function () {
+            Route::get('/customization/jenis-kegiatan', [JenisKegiatanController::class, 'index'])
+                ->name('customization.jenis_kegiatan');
+            Route::post('/customization/jenis-kegiatan', [JenisKegiatanController::class, 'store'])
+                ->name('customization.jenis_kegiatan.store');
+            Route::put('/customization/jenis-kegiatan/{jenisKegiatan}', [JenisKegiatanController::class, 'update'])
+                ->name('customization.jenis_kegiatan.update');
+        });
         
         // Fakultas
         Route::post('/customization/fakultas', [AdminCustomizationController::class, 'storeFakultas'])->name('customization.fakultas.store');
@@ -190,7 +206,9 @@ Route::middleware('auth')->group(function () {
     // 2. DOSEN SECTION
     // =====================================================================
     Route::prefix('dosen')->name('dosen.')->group(function () {
-        Route::get('/dashboard', [DosenDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [DosenDashboardController::class, 'index'])
+            ->middleware('role:Dosen,Dosen Pengusul,Dosen Penanggung Jawab')
+            ->name('dashboard');
 
         // Pengajuan
         Route::controller(DosenPengajuanSkemaDanForm::class)->group(function () {
@@ -223,7 +241,9 @@ Route::middleware('auth')->group(function () {
     Route::prefix('wakil_dekan3')->name('wakil_dekan3.')->group(function () {
         
         // Dashboard
-    Route::get('/dashboard', [WakilDekan3DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [WakilDekan3DashboardController::class, 'index'])
+        ->middleware('role:Wakil Dekan 3')
+        ->name('dashboard');
 
     // Group Route Controller Validasi
     Route::controller(WakilDekan3ValidasiController::class)->group(function () {
@@ -252,7 +272,9 @@ Route::middleware('auth')->group(function () {
     // =====================================================================
     Route::prefix('kepala_pusat')->name('kepala_pusat.')->group(function () {
         // Dashboard
-        Route::get('/dashboard', [KepalaPusatDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [KepalaPusatDashboardController::class, 'index'])
+            ->middleware('role:Kepala Pusat 1,Kepala Pusat 2,Kepala Pusat 3,Kepala Pusat 4,Kepala Pusat 5')
+            ->name('dashboard');
 
         // Validasi (List & Aksi)
         Route::controller(KepalaPusatValidasiController::class)->group(function () {
@@ -272,7 +294,9 @@ Route::middleware('auth')->group(function () {
     // =====================================================================
     Route::prefix('wakil_rektor')->name('wakil_rektor.')->group(function () {
         // Dashboard
-        Route::get('/dashboard', [WakilRektor3DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [WakilRektor3DashboardController::class, 'index'])
+            ->middleware('role:Wakil Rektor 3')
+            ->name('dashboard');
 
         // Validasi (List & Aksi)
         Route::controller(WakilRektor3ValidasiController::class)->group(function () {
@@ -291,7 +315,9 @@ Route::middleware('auth')->group(function () {
     // 6. DEKAN SECTION
     // =====================================================================
     Route::prefix('dekan')->name('dekan.')->group(function () {
-        Route::get('/dashboard', [DekanDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [DekanDashboardController::class, 'index'])
+            ->middleware('role:Dekan')
+            ->name('dashboard');
         
         Route::controller(DekanMonitoringController::class)->group(function () {
             Route::get('/monitoring', 'index')->name('monitoring');

@@ -111,6 +111,11 @@
                                             class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-bold fs-6">
                                             {{ $skala->nama }}
                                         </span>
+                                        @if ($skala->is_active)
+                                            <span class="badge bg-success ms-2">Aktif</span>
+                                        @else
+                                            <span class="badge bg-secondary ms-2">Nonaktif</span>
+                                        @endif
                                     </div>
                                     <div class="d-flex gap-2">
                                         <button class="btn btn-sm btn-action text-blue bg-blue-subtle"
@@ -239,10 +244,17 @@
                                             method="POST">
                                             @csrf @method('PUT')
                                             <div class="modal-body p-4">
-                                                <div class="mb-1">
+                                                <div class="mb-3">
                                                     <label class="form-label small fw-bold text-muted">Nama Skala</label>
                                                     <input type="text" name="nama" class="form-control"
                                                         value="{{ $skala->nama }}" required>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input type="checkbox" name="is_active" value="1"
+                                                        id="activeSkala{{ $skala->id }}"
+                                                        class="form-check-input" @checked($skala->is_active)>
+                                                    <label for="activeSkala{{ $skala->id }}"
+                                                        class="form-check-label fw-bold">Aktif</label>
                                                 </div>
                                             </div>
                                             <div class="modal-footer bg-light">

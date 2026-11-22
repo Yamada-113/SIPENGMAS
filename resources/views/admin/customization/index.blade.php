@@ -43,6 +43,23 @@
         <div class="row g-4 justify-content-center">
 
             <div class="col-lg-4 col-md-6">
+                <a href="{{ route('admin.customization.jenis_kegiatan') }}" class="text-decoration-none action-card-link">
+                    <div class="card shadow-sm action-card h-100 border-0">
+                        <div class="card-body p-4 d-flex flex-column align-items-center text-center">
+                            <div class="icon-circle bg-teal-subtle mb-3">
+                                <i class="bi bi-list-ul fs-2 text-teal"></i>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-2">Master Jenis Kegiatan</h6>
+                            <p class="text-muted small mb-0">Tambah, ubah, dan nonaktifkan pilihan jenis kegiatan.</p>
+                            <div class="mt-auto pt-3 text-teal fw-bold small action-text">Kelola <i
+                                    class="bi bi-arrow-right"></i></div>
+                        </div>
+                        <div class="card-footer-line bg-teal"></div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
                 <a href="{{ route('admin.customization.skema') }}" class="text-decoration-none action-card-link">
                     <div class="card shadow-sm action-card h-100 border-0">
 

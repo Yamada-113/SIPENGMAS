@@ -129,9 +129,7 @@
                                         </option>
                                     @endforeach
                                 @else
-                                    {{-- Opsi cadangan sementara agar tidak error saat backend belum siap --}}
-                                    <option value="1">Penelitian Dosen Pemula (Dummy)</option>
-                                    <option value="2">Pengabdian Kepada Masyarakat (Dummy)</option>
+                                    <option value="" disabled>Tidak ada jenis kegiatan aktif</option>
                                 @endif
                             </select>
                             <div class="invalid-feedback">Jenis kegiatan wajib dipilih.</div>

@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\JenisKegiatan;
 
 class JenisKegiatanSeeder extends Seeder
 {
@@ -13,9 +13,11 @@ class JenisKegiatanSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('jenis_kegiatans')->insert([
-            ['nama' => 'Internal'],
-            ['nama' => 'Eksternal'],
-        ]);
+        foreach (['Internal', 'Eksternal'] as $nama) {
+            JenisKegiatan::updateOrCreate(
+                ['nama' => $nama],
+                ['is_active' => true]
+            );
+        }
     }
 }

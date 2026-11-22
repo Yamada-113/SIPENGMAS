@@ -74,21 +74,9 @@
     @stack('styles')
 
     @php
-        $dashboardRoute = route('dosen.dashboard');
-        if (auth()->check()) {
-            $userRole = auth()->user()->role;
-            if ($userRole === 'Admin') {
-                $dashboardRoute = route('admin.dashboard');
-            } elseif ($userRole === 'Wakil Dekan 3') {
-                $dashboardRoute = route('wakil_dekan3.dashboard');
-            } elseif ($userRole === 'Dekan') {
-                $dashboardRoute = route('dekan.dashboard');
-            } elseif (str_contains($userRole, 'Kepala Pusat')) {
-                $dashboardRoute = route('kepala_pusat.dashboard');
-            } elseif ($userRole === 'Wakil Rektor 3') {
-                $dashboardRoute = route('wakil_rektor.dashboard');
-            }
-        }
+        $dashboardRoute = auth()->check()
+            ? route('dashboard')
+            : route('login');
     @endphp
 </head>
 
@@ -209,24 +197,11 @@
 
     <main class="py-4">
         @php
-            $currentRole = auth()->check() ? auth()->user()->role : '';
-            $navBackRoute = 'login';
-            if (str_contains($currentRole, 'Admin')) {
-                $navBackRoute = 'admin.dashboard';
-            } elseif (str_contains($currentRole, 'Dosen')) {
-                $navBackRoute = 'dosen.dashboard';
-            } elseif (str_contains($currentRole, 'Wakil Dekan')) {
-                $navBackRoute = 'wakil_dekan3.dashboard';
-            } elseif (str_contains($currentRole, 'Dekan')) {
-                $navBackRoute = 'dekan.dashboard';
-            } elseif (str_contains($currentRole, 'Kepala Pusat')) {
-                $navBackRoute = 'kepala_pusat.dashboard';
-            } elseif (str_contains($currentRole, 'Wakil Rektor')) {
-                $navBackRoute = 'wakil_rektor.dashboard';
-            }
             $isNotDashboard = !request()->routeIs('*.dashboard');
             $previousUrl = url()->previous();
-            $homeUrl = route($navBackRoute);
+            $homeUrl = auth()->check()
+                ? route('dashboard')
+                : route('login');
         @endphp
 
         <!-- Tombol Kembali dan Home di pojok kiri atas konten -->

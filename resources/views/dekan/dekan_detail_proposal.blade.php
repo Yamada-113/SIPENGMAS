@@ -52,6 +52,10 @@
                                 </p>
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Jenis Kegiatan</label>
+                            <p class="mb-0 text-dark">{{ $detailProposal->identitas->jenis_kegiatan_nama ?? '-' }}</p>
+                        </div>
                         <div class="mb-0">
                             <label class="small text-muted fw-bold">Bidang Fokus</label>
                             <p class="mb-0 text-dark">{{ $detailProposal->identitas->bidang_fokus ?? '-' }}</p>

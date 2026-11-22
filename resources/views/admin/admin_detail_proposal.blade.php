@@ -43,6 +43,13 @@
                                 {{ $detailProposal->skemaRef->nama ?? 'Skema Tidak Ditemukan' }}
                             </div>
                             <div class="col-md-6">
+                                <label class="small text-muted fw-bold">Jenis Kegiatan</label>
+                                <p class="mb-0">{{ $detailProposal->identitas->jenis_kegiatan_nama ?? '-' }}</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
                                 <label class="small text-muted fw-bold">Tahun Pelaksanaan</label>
                                 <p class="mb-0">{{ $detailProposal->tahun_pelaksanaan }}
                                     <span class="text-muted">({{ $detailProposal->identitas->periode_kegiatan ?? 1 }}
