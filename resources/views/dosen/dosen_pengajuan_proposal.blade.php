@@ -3,17 +3,14 @@
 @section('title', 'Form Pengajuan Proposal')
 
 @section('content')
-    {{-- 1. CEK STATUS TANDA TANGAN (PHP) --}}
     @php
         $userHasSignature = !empty(Auth::user()->tanda_tangan);
     @endphp
 
-    {{-- 2. CONTAINER NOTIFIKASI MELAYANG (FLOATING) --}}
     <div id="floating-alert-container"
         style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 400px;">
     </div>
 
-    {{-- 3. MODAL UPLOAD TANDA TANGAN (AJAX) --}}
     <div class="modal fade" id="modalUploadSignature" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
@@ -33,7 +30,6 @@
                         pengesahan secara otomatis.
                     </div>
 
-                    {{-- Form AJAX --}}
                     <form id="formAjaxSignature" enctype="multipart/form-data">
                         @csrf
                         <div class="card bg-light border-0 p-3 mb-3">
@@ -62,13 +58,13 @@
         </div>
     </div>
 
-    {{-- 4. KONTEN UTAMA --}}
     <div class="container">
-        {{-- Notifikasi Error Global --}}
         @if (session('error'))
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    showFloatingAlert("{{ session('error') }}", 'danger');
+                    if (typeof showFloatingAlert === 'function') {
+                        showFloatingAlert(@json(session('error')), 'danger');
+                    }
                 });
             </script>
         @endif
@@ -76,7 +72,9 @@
         @if ($errors->any())
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    showFloatingAlert("Terdapat kolom yang belum diisi atau salah. Mohon periksa kembali.", 'danger');
+                    if (typeof showFloatingAlert === 'function') {
+                        showFloatingAlert("Terdapat kolom yang belum diisi atau salah. Mohon periksa kembali.", 'danger');
+                    }
                 });
             </script>
         @endif
@@ -87,7 +85,6 @@
             id="formPengajuan" novalidate>
             @csrf
 
-            {{-- DETAIL PROPOSAL --}}
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-light">
                     <h6 class="mb-0 fw-bold text-dark">Detail Proposal</h6>
@@ -99,8 +96,7 @@
                             <input type="text" class="form-control bg-light" name="tahun_pelaksanaan"
                                 value="{{ $selectedYear }}" readonly>
                         </div>
-                        
-                        {{-- SKALA PELAKSANAAN (READONLY SESUAI PILIHAN SEBELUMNYA + HIDDEN INPUT) --}}
+
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Skala Pelaksanaan</label>
                             <input type="text" class="form-control bg-light" value="{{ $selectedRole }}" readonly>
@@ -113,40 +109,35 @@
                             <input type="hidden" name="skema" value="{{ $skemaId }}">
                         </div>
 
-                        {{-- TAMBAHAN: PILIHAN JENIS KEGIATAN (AMAN DARI ERROR) --}}
                         <div class="col-md-12">
                             <label for="jenis_kegiatan_id" class="form-label fw-bold">
                                 Jenis Kegiatan <span class="text-danger">*</span>
                             </label>
-                            <select required class="form-select @error('jenis_kegiatan_id') is-invalid @enderror" 
+                            <select required class="form-select @error('jenis_kegiatan_id') is-invalid @enderror"
                                 name="jenis_kegiatan_id" id="jenis_kegiatan_id">
                                 <option value="" selected disabled>-- Pilih Jenis Kegiatan --</option>
-                                
-                                @if(isset($jenisKegiatan) && count($jenisKegiatan) > 0)
+                                @if (isset($jenisKegiatan) && count($jenisKegiatan) > 0)
                                     @foreach ($jenisKegiatan as $jenis)
                                         <option value="{{ $jenis->id }}" {{ old('jenis_kegiatan_id') == $jenis->id ? 'selected' : '' }}>
                                             {{ $jenis->nama }}
                                         </option>
                                     @endforeach
                                 @else
-                                    {{-- Opsi cadangan sementara agar tidak error saat backend belum siap --}}
-                                    <option value="1">Penelitian Dosen Pemula (Dummy)</option>
-                                    <option value="2">Pengabdian Kepada Masyarakat (Dummy)</option>
+                                    <option value="1" {{ old('jenis_kegiatan_id') == 1 ? 'selected' : '' }}>Penelitian Dosen Pemula (Dummy)</option>
+                                    <option value="2" {{ old('jenis_kegiatan_id') == 2 ? 'selected' : '' }}>Pengabdian Kepada Masyarakat (Dummy)</option>
                                 @endif
                             </select>
-                            <div class="invalid-feedback">Jenis kegiatan wajib dipilih.</div>
-                            @error('jenis_kegiatan_id')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                            <div class="invalid-feedback">
+                                @error('jenis_kegiatan_id') {{ $message }} @else Jenis kegiatan wajib dipilih. @enderror
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- UPLOAD PROPOSAL --}}
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-light">
-                    <h6 class="mb-0 fw-bold"> Upload Proposal</h6>
+                    <h6 class="mb-0 fw-bold">Upload Proposal</h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
@@ -159,15 +150,13 @@
                         <div class="form-text text-muted">
                             Format yang diizinkan: PDF, DOC, DOCX. Maksimal ukuran file: 10MB.
                         </div>
-                        <div class="invalid-feedback">File proposal wajib diunggah.</div>
-                        @error('file_proposal')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
+                        <div class="invalid-feedback">
+                            @error('file_proposal') {{ $message }} @else File proposal wajib diunggah. @enderror
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {{-- 1. IDENTITAS USULAN --}}
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-light">
                     <h6 class="mb-0 fw-bold">1. Identitas Usulan</h6>
@@ -180,10 +169,9 @@
                         </div>
                         <textarea required class="form-control @error('judul') is-invalid @enderror" name="judul" id="judul"
                             rows="3" maxlength="300">{{ old('judul') }}</textarea>
-                        <div class="invalid-feedback">Judul wajib diisi.</div>
-                        @error('judul')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
+                        <div class="invalid-feedback">
+                            @error('judul') {{ $message }} @else Judul wajib diisi. @enderror
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -193,23 +181,21 @@
                         </div>
                         <textarea required class="form-control @error('abstrak') is-invalid @enderror" name="abstrak" id="abstrak"
                             rows="4" maxlength="500">{{ old('abstrak') }}</textarea>
-                        <div class="invalid-feedback">Abstrak wajib diisi.</div>
-                        @error('abstrak')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
+                        <div class="invalid-feedback">
+                            @error('abstrak') {{ $message }} @else Abstrak wajib diisi. @enderror
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center">
-                            <label class="form-label">Keyword <span class="text-danger">*</span></label>
+                            <label for="keyword" class="form-label">Keyword <span class="text-danger">*</span></label>
                             <small id="keyword-counter" class="form-text text-muted">0/150</small>
                         </div>
                         <textarea required class="form-control @error('keyword') is-invalid @enderror" name="keyword" id="keyword"
                             rows="2" maxlength="150">{{ old('keyword') }}</textarea>
-                        <div class="invalid-feedback">Keyword wajib diisi.</div>
-                        @error('keyword')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
+                        <div class="invalid-feedback">
+                            @error('keyword') {{ $message }} @else Keyword wajib diisi. @enderror
+                        </div>
                     </div>
 
                     <div class="row">
@@ -231,24 +217,17 @@
                             <input type="text"
                                 class="form-control input-rupiah @error('jumlah_tendik') is-invalid @enderror"
                                 name="jumlah_tendik" maxlength="3" placeholder="0" value="{{ old('jumlah_tendik') }}">
-                            @error('jumlah_tendik')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Jumlah Mahasiswa</label>
                             <input type="text"
                                 class="form-control input-rupiah @error('jumlah_mahasiswa') is-invalid @enderror"
                                 name="jumlah_mahasiswa" maxlength="3" placeholder="0" value="{{ old('jumlah_mahasiswa') }}">
-                            @error('jumlah_mahasiswa')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- 2. ATRIBUT & MITRA --}}
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-light">
                     <h6 class="mb-0 fw-bold">2. Atribut Usulan & Mitra</h6>
@@ -261,7 +240,9 @@
                         </div>
                         <input required type="text" class="form-control @error('rumpun_ilmu') is-invalid @enderror"
                             id="rumpun_ilmu" name="rumpun_ilmu" value="{{ old('rumpun_ilmu') }}" maxlength="50">
-                        <div class="invalid-feedback">Rumpun ilmu wajib diisi.</div>
+                        <div class="invalid-feedback">
+                            @error('rumpun_ilmu') {{ $message }} @else Rumpun ilmu wajib diisi. @enderror
+                        </div>
                     </div>
                     <hr>
                     <h6 class="fw-bold">MITRA</h6>
@@ -275,7 +256,9 @@
                                 class="form-control @error('nama_institusi_mitra') is-invalid @enderror"
                                 name="nama_institusi_mitra" id="mitra_nama" value="{{ old('nama_institusi_mitra') }}"
                                 maxlength="50">
-                            <div class="invalid-feedback">Nama mitra wajib diisi.</div>
+                            <div class="invalid-feedback">
+                                @error('nama_institusi_mitra') {{ $message }} @else Nama mitra wajib diisi. @enderror
+                            </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="d-flex justify-content-between align-items-center">
@@ -286,7 +269,9 @@
                                 class="form-control @error('penanggung_jawab_mitra') is-invalid @enderror"
                                 name="penanggung_jawab_mitra" id="mitra_penanggung_jawab"
                                 value="{{ old('penanggung_jawab_mitra') }}" maxlength="50">
-                            <div class="invalid-feedback">Penanggung jawab mitra wajib diisi.</div>
+                            <div class="invalid-feedback">
+                                @error('penanggung_jawab_mitra') {{ $message }} @else Penanggung jawab mitra wajib diisi. @enderror
+                            </div>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -296,23 +281,21 @@
                         </div>
                         <textarea required class="form-control @error('alamat_mitra') is-invalid @enderror" name="alamat_mitra"
                             id="mitra_alamat" rows="3" maxlength="250">{{ old('alamat_mitra') }}</textarea>
-                        <div class="invalid-feedback">Alamat mitra wajib diisi.</div>
+                        <div class="invalid-feedback">
+                            @error('alamat_mitra') {{ $message }} @else Alamat mitra wajib diisi. @enderror
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {{-- 4. ANGGOTA DOSEN --}}
             <div class="card shadow-sm mb-4" id="card-anggota-dosen">
                 <div class="card-header bg-light">
                     <h6 class="mb-0 fw-bold">3. Penambahan Anggota Pengabdian <span class="text-danger">*</span></h6>
                 </div>
                 <div class="card-body">
-                    <div id="error-anggota-dosen" class="alert alert-danger d-none p-2 mb-3">
+                    <div id="error-anggota-dosen" class="alert alert-danger {{ $errors->has('anggota_dosen') ? '' : 'd-none' }} p-2 mb-3">
                         <small><i class="bi bi-exclamation-circle me-1"></i> Wajib menambahkan minimal 1 Anggota Dosen.</small>
                     </div>
-                    @error('anggota_dosen')
-                        <div class="alert alert-danger p-2 mb-3"><small>{{ $message }}</small></div>
-                    @enderror
 
                     <div class="mb-3">
                         <label class="form-label">Nomor Induk Pegawai (NIP)</label>
@@ -389,18 +372,14 @@
                 </div>
             </div>
 
-            {{-- 5. ANGGOTA MAHASISWA --}}
             <div class="card shadow-sm mb-4" id="card-anggota-mhs">
                 <div class="card-header bg-light">
                     <h6 class="mb-0 fw-bold">4. Penambahan Anggota Mahasiswa <span class="text-danger">*</span></h6>
                 </div>
                 <div class="card-body">
-                    <div id="error-anggota-mhs" class="alert alert-danger d-none p-2 mb-3">
+                    <div id="error-anggota-mhs" class="alert alert-danger {{ $errors->has('anggota_mhs') ? '' : 'd-none' }} p-2 mb-3">
                         <small><i class="bi bi-exclamation-circle me-1"></i> Wajib menambahkan minimal 1 Anggota Mahasiswa.</small>
                     </div>
-                    @error('anggota_mhs')
-                        <div class="alert alert-danger p-2 mb-3"><small>{{ $message }}</small></div>
-                    @enderror
 
                     <div class="mb-3">
                         <label class="form-label mb-1">Nomor Pokok Mahasiswa (NPM)</label>
@@ -466,7 +445,6 @@
                 </div>
             </div>
 
-            {{-- TAMBAHAN: 5. RENCANA ANGGARAN BIAYA --}}
             <div class="card shadow-sm mb-4" id="card-rab">
                 <div class="card-header bg-light">
                     <h6 class="mb-0 fw-bold">5. Rencana Anggaran Biaya</h6>
@@ -478,10 +456,9 @@
                             <input type="text" required
                                 class="form-control input-rupiah rab-item @error('honor') is-invalid @enderror"
                                 name="honor" id="honor" placeholder="2.000.000" value="{{ old('honor') }}">
-                            <div class="invalid-feedback">Honor wajib diisi.</div>
-                            @error('honor')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                            <div class="invalid-feedback">
+                                @error('honor') {{ $message }} @else Honor wajib diisi. @enderror
+                            </div>
                         </div>
 
                         <div class="col-md-6">
@@ -489,10 +466,9 @@
                             <input type="text" required
                                 class="form-control input-rupiah rab-item @error('biaya_inovasi') is-invalid @enderror"
                                 name="biaya_inovasi" id="biaya_inovasi" placeholder="2.000.000" value="{{ old('biaya_inovasi') }}">
-                            <div class="invalid-feedback">Biaya inovasi wajib diisi.</div>
-                            @error('biaya_inovasi')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                            <div class="invalid-feedback">
+                                @error('biaya_inovasi') {{ $message }} @else Biaya inovasi wajib diisi. @enderror
+                            </div>
                         </div>
 
                         <div class="col-md-6">
@@ -500,10 +476,9 @@
                             <input type="text" required
                                 class="form-control input-rupiah rab-item @error('perjalanan_transportasi') is-invalid @enderror"
                                 name="perjalanan_transportasi" id="perjalanan_transportasi" placeholder="2.000.000" value="{{ old('perjalanan_transportasi') }}">
-                            <div class="invalid-feedback">Biaya perjalanan atau transportasi wajib diisi.</div>
-                            @error('perjalanan_transportasi')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                            <div class="invalid-feedback">
+                                @error('perjalanan_transportasi') {{ $message }} @else Biaya perjalanan atau transportasi wajib diisi. @enderror
+                            </div>
                         </div>
 
                         <div class="col-md-6">
@@ -511,10 +486,9 @@
                             <input type="text" required
                                 class="form-control input-rupiah rab-item @error('luaran') is-invalid @enderror"
                                 name="luaran" id="luaran" placeholder="2.000.000" value="{{ old('luaran') }}">
-                            <div class="invalid-feedback">Biaya luaran wajib diisi.</div>
-                            @error('luaran')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                            <div class="invalid-feedback">
+                                @error('luaran') {{ $message }} @else Biaya luaran wajib diisi. @enderror
+                            </div>
                         </div>
                     </div>
 
@@ -532,7 +506,6 @@
                 </div>
             </div>
 
-            {{-- TAMBAHAN: 6. PENGESAHAN --}}
             <div class="card shadow-sm mb-4" id="card-pengesahan">
                 <div class="card-header bg-light">
                     <h6 class="mb-0 fw-bold">6. Pengesahan</h6>
@@ -545,16 +518,14 @@
                             name="kota_pengesahan" id="kota_pengesahan" maxlength="20" placeholder="Jakarta"
                             value="{{ old('kota_pengesahan') }}">
                         <div class="d-flex justify-content-between">
-                            <div class="invalid-feedback">Kota wajib diisi.</div>
+                            <div class="invalid-feedback">
+                                @error('kota_pengesahan') {{ $message }} @else Kota wajib diisi. @enderror
+                            </div>
                             <small id="kota_pengesahan-counter" class="form-text text-muted ms-auto">0/20</small>
                         </div>
-                        @error('kota_pengesahan')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <div class="row g-4 mt-1">
-                        {{-- PIHAK YANG MENGETAHUI --}}
                         <div class="col-md-6">
                             <h6 class="fw-bold mb-3">Pihak yang Mengetahui <span class="text-danger">*</span></h6>
 
@@ -563,9 +534,6 @@
                                 <input type="text"
                                     class="form-control only-number @error('mengetahui_nip') is-invalid @enderror"
                                     name="mengetahui_nip" id="mengetahui_nip" value="{{ old('mengetahui_nip') }}">
-                                @error('mengetahui_nip')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
                             </div>
 
                             <div class="mb-3">
@@ -573,9 +541,6 @@
                                 <input type="text"
                                     class="form-control @error('mengetahui_nama') is-invalid @enderror"
                                     name="mengetahui_nama" id="mengetahui_nama" value="{{ old('mengetahui_nama') }}">
-                                @error('mengetahui_nama')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
                             </div>
 
                             <div class="mb-3">
@@ -583,13 +548,9 @@
                                 <input type="text"
                                     class="form-control @error('mengetahui_jabatan') is-invalid @enderror"
                                     name="mengetahui_jabatan" id="mengetahui_jabatan" value="{{ old('mengetahui_jabatan') }}">
-                                @error('mengetahui_jabatan')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
                             </div>
                         </div>
 
-                        {{-- PIHAK YANG MENYETUJUI --}}
                         <div class="col-md-6">
                             <h6 class="fw-bold mb-3">Pihak yang Menyetujui <span class="text-danger">*</span></h6>
 
@@ -598,9 +559,6 @@
                                 <input type="text"
                                     class="form-control only-number @error('menyetujui_nip') is-invalid @enderror"
                                     name="menyetujui_nip" id="menyetujui_nip" value="{{ old('menyetujui_nip') }}">
-                                @error('menyetujui_nip')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
                             </div>
 
                             <div class="mb-3">
@@ -608,9 +566,6 @@
                                 <input type="text"
                                     class="form-control @error('menyetujui_nama') is-invalid @enderror"
                                     name="menyetujui_nama" id="menyetujui_nama" value="{{ old('menyetujui_nama') }}">
-                                @error('menyetujui_nama')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
                             </div>
 
                             <div class="mb-3">
@@ -618,9 +573,6 @@
                                 <input type="text"
                                     class="form-control @error('menyetujui_jabatan') is-invalid @enderror"
                                     name="menyetujui_jabatan" id="menyetujui_jabatan" value="{{ old('menyetujui_jabatan') }}">
-                                @error('menyetujui_jabatan')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
                             </div>
                         </div>
                     </div>
@@ -665,7 +617,6 @@
                     hitungTotalRab();
                 });
             });
-
             hitungTotalRab();
 
             const kotaInput = document.getElementById('kota_pengesahan');
@@ -677,6 +628,76 @@
                 kotaInput.addEventListener('input', updateKotaCounter);
                 updateKotaCounter();
             }
+
+            async function bindCheckButton(btnId, inputId, namaId, endpoint, paramKey, msgKosong, msgGagal) {
+                const btn = document.getElementById(btnId);
+                const input = document.getElementById(inputId);
+                const namaTarget = document.getElementById(namaId);
+                if (!btn || !input || !namaTarget) return;
+
+                btn.addEventListener('click', async function() {
+                    const nilai = input.value.trim();
+                    if (!nilai) {
+                        alert(msgKosong);
+                        input.focus();
+                        return;
+                    }
+
+                    const labelAwal = btn.textContent;
+                    btn.disabled = true;
+                    btn.textContent = 'Mengecek...';
+
+                    try {
+                        const res = await fetch(`${endpoint}?${encodeURIComponent(paramKey)}=${encodeURIComponent(nilai)}`, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            credentials: 'same-origin'
+                        });
+
+                        let data = {};
+                        try {
+                            data = await res.json();
+                        } catch (e) {
+                            data = {};
+                        }
+
+                        if (res.ok && data.nama) {
+                            namaTarget.value = data.nama;
+                        } else {
+                            namaTarget.value = '';
+                            alert(data.message || `${msgGagal} (status ${res.status})`);
+                        }
+                    } catch (err) {
+                        namaTarget.value = '';
+                        alert('Gagal menghubungi server saat mengecek data.');
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = labelAwal;
+                    }
+                });
+            }
+
+            bindCheckButton(
+                'btnCheckNIDN',
+                'nidn_input',
+                'nama_dosen_form',
+                '/dosen/pengajuan/check-dosen',
+                'nip',
+                'Masukkan NIP terlebih dahulu.',
+                'Data dosen tidak ditemukan.'
+            );
+
+            bindCheckButton(
+                'btnCheckNPM',
+                'npm_input',
+                'nama_mhs_form',
+                '/dosen/pengajuan/check-mahasiswa',
+                'npm',
+                'Masukkan NPM terlebih dahulu.',
+                'Data mahasiswa tidak ditemukan.'
+            );
         });
     </script>
 @endsection
