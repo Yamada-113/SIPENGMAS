@@ -13,6 +13,13 @@
             </a>
         </div>
 
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <div class="row g-4">
 
             <div class="col-md-4">
@@ -35,8 +42,13 @@
                             @csrf
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-secondary text-uppercase">Nama Skala</label>
-                                <input type="text" name="nama" class="form-control form-control-lg fs-6"
+                                <input type="text" name="nama"
+                                    class="form-control form-control-lg fs-6 @error('nama', 'storeSkala') is-invalid @enderror"
+                                    value="{{ old('nama', '', 'storeSkala') }}"
                                     placeholder="Contoh: Universitas" required>
+                                @error('nama', 'storeSkala')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
                             <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm py-2">
                                 <i class="bi bi-plus-lg me-1"></i> Simpan Skala
@@ -65,7 +77,7 @@
                                     <label class="form-label fw-bold small text-secondary text-uppercase">Pilih Skala
                                         Induk</label>
                                     <select name="skala_id" class="form-select" required>
-                                        @foreach ($skalas as $skala)
+                                        @foreach ($activeSkalas as $skala)
                                             <option value="{{ $skala->id }}">{{ $skala->nama }}</option>
                                         @endforeach
                                     </select>
@@ -83,6 +95,9 @@
                                     <input type="text" name="nama" class="form-control"
                                         placeholder="Contoh: Skema Program Internal Prodi Teknik Informatika" required>
                                     <div class="form-text small">Nama resmi yang akan dicetak di proposal/surat.</div>
+                                    @error('nama', 'storeSkema')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end mt-4">
@@ -98,7 +113,7 @@
 
         <div class="row mt-5">
             <div class="col-12">
-                <h5 class="fw-bold mb-3 border-start border-4 border-primary ps-3 text-dark">Daftar Skema Aktif</h5>
+                <h5 class="fw-bold mb-3 border-start border-4 border-primary ps-3 text-dark">Daftar Skema</h5>
 
                 <div class="card shadow-sm border-0 rounded-3">
                     <div class="card-body p-0">
@@ -144,6 +159,7 @@
                                                 <tr class="text-secondary small text-uppercase">
                                                     <th class="ps-3 py-2" width="25%">Label Dropdown</th>
                                                     <th class="py-2" width="60%">Nama Lengkap Skema</th>
+                                                    <th class="py-2">Status</th>
                                                     <th class="py-2 text-end pe-3" width="15%">Aksi</th>
                                                 </tr>
                                             </thead>
@@ -152,6 +168,13 @@
                                                     <tr>
                                                         <td class="ps-3 fw-bold text-dark">{{ $item->label_dropdown }}</td>
                                                         <td class="text-secondary">{{ $item->nama }}</td>
+                                                        <td>
+                                                            @if ($item->is_active)
+                                                                <span class="badge bg-success">Aktif</span>
+                                                            @else
+                                                                <span class="badge bg-secondary">Nonaktif</span>
+                                                            @endif
+                                                        </td>
                                                         <td class="text-end pe-3">
                                                             <div class="d-flex justify-content-end gap-1">
                                                                 <button class="btn btn-blue border-0"
@@ -206,6 +229,18 @@
                                                                                 class="form-label small fw-bold text-muted">Nama
                                                                                 Lengkap Skema</label>
                                                                             <textarea name="nama" class="form-control" rows="3" required>{{ $item->nama }}</textarea>
+                                                                            @error('nama', 'updateSkema')
+                                                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                                                            @enderror
+                                                                        </div>
+                                                                        <input type="hidden" name="editing_skema_id" value="{{ $item->id }}">
+                                                                        <input type="hidden" name="is_active" value="0">
+                                                                        <div class="form-check form-switch">
+                                                                            <input type="checkbox" name="is_active" value="1"
+                                                                                id="activeSkema{{ $item->id }}"
+                                                                                class="form-check-input" @checked($item->is_active)>
+                                                                            <label for="activeSkema{{ $item->id }}"
+                                                                                class="form-check-label fw-bold">Aktif</label>
                                                                         </div>
                                                                     </div>
                                                                     <div class="modal-footer bg-light">
@@ -248,7 +283,12 @@
                                                     <label class="form-label small fw-bold text-muted">Nama Skala</label>
                                                     <input type="text" name="nama" class="form-control"
                                                         value="{{ $skala->nama }}" required>
+                                                    @error('nama', 'updateSkala')
+                                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                                    @enderror
                                                 </div>
+                                                <input type="hidden" name="editing_skala_id" value="{{ $skala->id }}">
+                                                <input type="hidden" name="is_active" value="0">
                                                 <div class="form-check form-switch">
                                                     <input type="checkbox" name="is_active" value="1"
                                                         id="activeSkala{{ $skala->id }}"
@@ -410,4 +450,26 @@
             box-shadow: 0 0 0 0.25rem rgba(55, 138, 117, 0.25);
         }
     </style>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                @if ($errors->getBag('updateSkema')->any())
+                    const skemaId = @json(old('editing_skema_id'));
+                    const skemaModal = document.getElementById(`editSkemaModal${skemaId}`);
+                    if (skemaModal) {
+                        bootstrap.Modal.getOrCreateInstance(skemaModal).show();
+                    }
+                @endif
+
+                @if ($errors->getBag('updateSkala')->any())
+                    const skalaId = @json(old('editing_skala_id'));
+                    const skalaModal = document.getElementById(`editSkalaModal${skalaId}`);
+                    if (skalaModal) {
+                        bootstrap.Modal.getOrCreateInstance(skalaModal).show();
+                    }
+                @endif
+            });
+        </script>
+    @endpush
 @endsection

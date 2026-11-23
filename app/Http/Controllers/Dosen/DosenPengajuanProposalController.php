@@ -11,6 +11,7 @@ use App\Models\ProposalCoreAtribut;
 use App\Models\ProposalCoreBiaya;
 use App\Models\ProposalCorePengesahan;
 use App\Models\ProposalCoreUraian;
+use App\Models\Skala;
 use App\Services\NotificationFlowService;
 use Exception;
 use Illuminate\Http\Request;
@@ -31,7 +32,15 @@ class DosenPengajuanProposalController extends Controller
                 'max:50',
                 Rule::exists('skalas', 'nama')->where('is_active', true),
             ],
-            'skema' => 'required|integer',
+            'skema' => [
+                'required',
+                'integer',
+                Rule::exists('skemas', 'id')
+                    ->where('is_active', true)
+                    ->where('skala_id', Skala::active()
+                        ->where('nama', $request->input('skala_pelaksanaan'))
+                        ->value('id') ?? 0),
+            ],
             'file_proposal' => 'required|file|mimes:pdf,doc,docx|max:10240',
             'judul' => 'required|string|max:300',
             'abstrak' => 'required|string|max:500',

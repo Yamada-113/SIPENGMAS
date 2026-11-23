@@ -37,8 +37,10 @@ class DosenPengajuanSkemaDanForm extends Controller
     public function showForm($year, $skemaId, $role)
     {
         $dataFakultas = Fakultas::with('prodis')->get();
-        $skema = Skema::find($skemaId);
-        $namaSkema = $skema ? $skema->nama : 'Skema Tidak Ditemukan / Non-Aktif';
+        $skema = Skema::where('is_active', true)
+            ->whereHas('skala', fn ($query) => $query->where('is_active', true))
+            ->findOrFail($skemaId);
+        $namaSkema = $skema->nama;
         $prodis = Prodi::all();
         $skalas = Skala::active()->orderBy('nama')->get();
         $jenisKegiatan = JenisKegiatan::active()->orderBy('nama')->get();
