@@ -30,17 +30,19 @@ class AdminCustomizationController extends Controller
     public function skema()
     {
         $skalas = Skala::with('skemas')->orderBy('nama')->get();
+        $activeSkalas = Skala::active()->orderBy('nama')->get();
 
-        return view('admin.customization.skema', compact('skalas'));
+        return view('admin.customization.skema', compact('skalas', 'activeSkalas'));
     }
 
     public function storeSkala(Request $request)
     {
-        $validated = $request->validate([
+        $request->merge(['nama' => trim((string) $request->input('nama'))]);
+        $validated = $request->validateWithBag('storeSkala', [
             'nama' => ['required', 'string', 'max:255', 'unique:skalas,nama'],
         ], [
             'nama.required' => 'Nama skala wajib diisi.',
-            'nama.unique' => 'Nama skala sudah digunakan.',
+            'nama.unique' => 'Nama skala ini sudah ada.',
         ]);
 
         Skala::create([
@@ -53,19 +55,32 @@ class AdminCustomizationController extends Controller
 
     public function storeSkema(Request $request)
     {
-        $request->validate([
-            'skala_id' => 'required|exists:skalas,id',
-            'label_dropdown' => 'required',
-            'nama' => 'required',
+        $request->merge(['nama' => trim((string) $request->input('nama'))]);
+        $validated = $request->validateWithBag('storeSkema', [
+            'skala_id' => [
+                'required',
+                Rule::exists('skalas', 'id')->where('is_active', true),
+            ],
+            'label_dropdown' => ['required', 'string', 'max:255'],
+            'nama' => ['required', 'string', 'max:255', Rule::unique('skemas', 'nama')],
+        ], [
+            'nama.required' => 'Nama skema wajib diisi.',
+            'nama.unique' => 'Nama skema ini sudah ada.',
         ]);
-        Skema::create($request->all());
+        Skema::create([
+            'skala_id' => $validated['skala_id'],
+            'label_dropdown' => trim($validated['label_dropdown']),
+            'nama' => $validated['nama'],
+            'is_active' => true,
+        ]);
 
         return back()->with('success', 'Skema Berhasil Ditambahkan');
     }
 
     public function updateSkala(Request $request, $id)
     {
-        $validated = $request->validate([
+        $request->merge(['nama' => trim((string) $request->input('nama'))]);
+        $validated = $request->validateWithBag('updateSkala', [
             'nama' => [
                 'required',
                 'string',
@@ -75,7 +90,7 @@ class AdminCustomizationController extends Controller
             'is_active' => ['sometimes', 'boolean'],
         ], [
             'nama.required' => 'Nama skala wajib diisi.',
-            'nama.unique' => 'Nama skala sudah digunakan.',
+            'nama.unique' => 'Nama skala ini sudah ada.',
         ]);
 
         $skala = Skala::findOrFail($id);
@@ -96,14 +111,25 @@ class AdminCustomizationController extends Controller
 
     public function updateSkema(Request $request, $id)
     {
-        $request->validate([
-            'label_dropdown' => 'required',
-            'nama' => 'required',
+        $request->merge(['nama' => trim((string) $request->input('nama'))]);
+        $validated = $request->validateWithBag('updateSkema', [
+            'label_dropdown' => ['required', 'string', 'max:255'],
+            'nama' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('skemas', 'nama')->ignore($id),
+            ],
+            'is_active' => ['sometimes', 'boolean'],
+        ], [
+            'nama.required' => 'Nama skema wajib diisi.',
+            'nama.unique' => 'Nama skema ini sudah ada.',
         ]);
         $skema = Skema::findOrFail($id);
         $skema->update([
-            'label_dropdown' => $request->label_dropdown,
-            'nama' => $request->nama,
+            'label_dropdown' => trim($validated['label_dropdown']),
+            'nama' => $validated['nama'],
+            'is_active' => $request->boolean('is_active'),
         ]);
 
         return back()->with('success', 'Data Skema berhasil diperbarui.');

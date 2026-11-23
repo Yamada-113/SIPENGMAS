@@ -45,12 +45,12 @@ class SkalaCrudTest extends TestCase
         $this->actingAs($admin)
             ->from(route('admin.customization.skema'))
             ->post(route('admin.customization.skala.store'), ['nama' => ''])
-            ->assertSessionHasErrors('nama');
+            ->assertSessionHasErrorsIn('storeSkala', 'nama');
 
         $this->actingAs($admin)
             ->from(route('admin.customization.skema'))
             ->post(route('admin.customization.skala.store'), ['nama' => 'Fakultas'])
-            ->assertSessionHasErrors('nama');
+            ->assertSessionHasErrorsIn('storeSkala', 'nama');
 
         $this->assertSame(1, Skala::where('nama', 'Fakultas')->count());
     }
@@ -83,7 +83,7 @@ class SkalaCrudTest extends TestCase
                 'nama' => 'Pusat',
                 'is_active' => 1,
             ])
-            ->assertSessionHasErrors('nama');
+            ->assertSessionHasErrorsIn('updateSkala', 'nama');
 
         $this->assertSame('Prodi', $prodi->refresh()->nama);
     }
