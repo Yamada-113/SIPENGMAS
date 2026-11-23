@@ -8,9 +8,6 @@
                 <h4 class="fw-bold text-dark mb-1">Manajemen Skala & Skema</h4>
                 <p class="text-muted small mb-0">Kelola Kategori Skala dan Skema Pengabdian Disini!!! :)</p>
             </div>
-            <a href="{{ route('admin.customization') }}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm rounded-pill">
-                <i class="bi  me-1"></i>  ke Hub
-            </a>
         </div>
 
         <div class="row g-4">
@@ -399,7 +396,6 @@
         .transition-bg {
             transition: background-color 0.2s ease;
         }
-
         .hover-bg-light:hover {
             background-color: #fcfcfc;
         }
