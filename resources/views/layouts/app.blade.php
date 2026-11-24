@@ -91,6 +91,13 @@
 
             @auth
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center d-flex flex-row">
+                    <li class="nav-item border-start border-white border-opacity-50 px-3">
+                        <a class="nav-link d-flex align-items-center py-0 {{ request()->routeIs('dashboard') || request()->routeIs('*.dashboard') ? 'active text-decoration-underline' : '' }}" href="{{ $dashboardRoute }}">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
                     <li class="nav-item dropdown pe-3">
                         <a class="nav-link position-relative px-2" href="#" id="navbarDropdownNotif" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-bell-fill fs-5"></i>
