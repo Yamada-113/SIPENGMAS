@@ -5,6 +5,11 @@
 
     RewriteEngine On
 
+    # Deny sensitive files if they are ever placed in the public directory.
+    RewriteRule (^|/)\.(?:env(?:\..*)?|git(?:/.*)?|htaccess)$ - [F,NC,L]
+    RewriteRule (^|/)[^/]+\.(?:log|bak|backup|old|orig|save|swp|sql|dump|sqlite|db)(?:~)?$ - [F,NC,L]
+    RewriteRule (^|/)[^/]+~$ - [F,NC,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

@@ -26,6 +26,11 @@ Tim INOVIX. Aplikasi web Laravel untuk pengelolaan proposal penelitian dan penga
 6. Jalankan migration (lihat bagian di bawah).
 7. Buka aplikasi di Herd: `http://sipengmas-main.test`
 
+## Konfigurasi keamanan deployment
+- Simpan nilai rahasia (misalnya `APP_KEY`, `DB_PASSWORD`, dan `LDAP_PASSWORD`) hanya di `.env` atau secret manager deployment. Jangan isi nilai rahasia pada `.env.example`.
+- Arahkan document root web server ke folder `public/`, bukan root repositori. Aturan Apache di `public/.htaccess` juga menolak file dot, log, dan backup di folder publik; pastikan konfigurasi server lain menerapkan perlindungan yang setara.
+- Jika Reverb digunakan, isi `REVERB_ALLOWED_ORIGINS` dengan hostname frontend yang diizinkan, dipisahkan koma. Jangan gunakan `*` pada deployment.
+
 ## Migration
 Jalankan semua migration: `php artisan migrate`
 
